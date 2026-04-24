@@ -110,3 +110,16 @@ const CRITIQUE_SECTIONS = [
   {key:"stories",   label:"Stories"},
   {key:"landing",   label:"Landing"},
 ];
+
+// ─── ES MODULE COMPAT ─────────────────────────────────────────────────────────
+// When loaded as an ES module via Vite, const declarations are module-scoped.
+// Assigning to window makes them accessible to app.jsx without explicit imports.
+if (typeof window !== 'undefined') {
+  Object.assign(window, {
+    THEMES, TRANS_LIST, TRANS_MAP, LENGTHS,
+    THEOLOGY_EST_SECS, ILLUS_EST_SECS,
+    TUNE_PASTORS, OUTLINE_METHODS, VENUE_TYPES, AUDIENCE_TYPES,
+    THEO_SECS, EDITOR_FONTS, EDITOR_SIZES, EDITOR_COLORS,
+    MODE_COLORS, HIST_TABS, CRITIQUE_SECTIONS,
+  });
+}

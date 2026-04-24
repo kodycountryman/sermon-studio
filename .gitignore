@@ -3,3 +3,4 @@
 .claude/
 *.log
 node_modules/
+dist/

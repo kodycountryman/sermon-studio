@@ -1,10 +1,22 @@
 // ─── SERMON STUDIO UTILITIES ─────────────────────────────────────────────────
 // Storage shim, text helpers, and parsing functions.
+// In Vite/npm builds, npm packages are imported directly.
+// In legacy CDN mode, window.supabase / window.firebase are used as fallback.
+
+import { createClient } from '@supabase/supabase-js';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import * as pdfjsLib from 'pdfjs-dist';
+import pdfjsWorkerUrl from 'pdfjs-dist/build/pdf.worker?url';
+
+// ─── PDF.js worker setup ──────────────────────────────────────────────────────
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorkerUrl;
+window.pdfjsLib = pdfjsLib; // app.jsx uses window.pdfjsLib
 
 // ─── SUPABASE CLIENT ─────────────────────────────────────────────────────────
 const SUPABASE_URL  = "https://vpkbabjvjkiyvowdboul.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwa2JhYmp2amtpeXZvd2Rib3VsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNDQxNjYsImV4cCI6MjA5MDkyMDE2Nn0.50PU9TJIsn5LOFnZKCvo2EC3qSsz7zW43IQyJnU4Q68";
-const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
 
 // ─── CLOUD SERMON HISTORY ─────────────────────────────────────────────────────
 window.cloudHistory = {
@@ -66,6 +78,29 @@ window.cloudStories = {
   delete: async (id) => {
     if (!sb) return;
     try { await sb.from("sermon_stories").delete().eq("id", id); } catch(e) {}
+  },
+};
+
+// ─── CLOUD VOICE PROFILE ─────────────────────────────────────────────────────
+window.cloudVoiceProfile = {
+  save: async (profile) => {
+    if (!sb) return;
+    try {
+      await sb.from("sermon_voice_profile").upsert({
+        id: "kody",
+        profile_json: JSON.stringify(profile),
+        sermon_count: profile.sermonCount || 0,
+        updated_at: new Date().toISOString(),
+      });
+    } catch(e) { console.warn("Supabase voice profile save failed:", e.message); }
+  },
+  load: async () => {
+    if (!sb) return null;
+    try {
+      const { data, error } = await sb.from("sermon_voice_profile").select("*").eq("id", "kody").single();
+      if (error || !data) return null;
+      return JSON.parse(data.profile_json);
+    } catch(e) { console.warn("Supabase voice profile load failed:", e.message); return null; }
   },
 };
 
@@ -150,71 +185,115 @@ function parseLineToHtml(str) {
 }
 
 function rawToHtml(text) {
-  return (text || "").split("\n").map(line =>
-    `<div style="margin:0;padding:0;line-height:1.55;font-family:Arial,sans-serif;font-size:12pt;color:#111;">${parseLineToHtml(line) || "<br>"}</div>`
+  if (!text) return "";
+  // First, resolve multi-line tags by collapsing them into per-line tags.
+  // e.g. <STORY>\nline1\nline2\n</STORY> → <STORY>line1</STORY>\n<STORY>line2</STORY>
+  const multiRx = /<(BOLD|ITALIC|SCRIPTURE|ONELINER|SCREEN|HEADER|STORY|SUMMARY|JOKE|EXAMPLE|CLOSING)(?:\s+ref="([^"]*)")?>([\s\S]*?)<\/\1>/g;
+  let resolved = text.replace(multiRx, (match, tag, ref, content) => {
+    // If content spans multiple lines, wrap each line in its own tag
+    const refAttr = ref ? ` ref="${ref}"` : "";
+    return content.split("\n").map(line =>
+      line.trim() ? `<${tag}${refAttr}>${line}</${tag}>` : ""
+    ).join("\n");
+  });
+  // Also handle orphaned opening tags (AI sometimes outputs <STORY> on its own line)
+  // Remove standalone opening/closing tags that have no content
+  resolved = resolved.replace(/^<(BOLD|ITALIC|SCRIPTURE|ONELINER|SCREEN|HEADER|STORY|SUMMARY|JOKE|EXAMPLE|CLOSING)>\s*$/gm, "");
+  resolved = resolved.replace(/^<\/(BOLD|ITALIC|SCRIPTURE|ONELINER|SCREEN|HEADER|STORY|SUMMARY|JOKE|EXAMPLE|CLOSING)>\s*$/gm, "");
+  // Handle case where opening tag is alone on a line: apply tag to ALL following lines until closing tag
+  const tags = ["BOLD","ITALIC","SCRIPTURE","ONELINER","SCREEN","HEADER","STORY","SUMMARY","JOKE","EXAMPLE","CLOSING"];
+  for (const tag of tags) {
+    const openRx = new RegExp(`^<${tag}>\\s*$`, "m");
+    const closeRx = new RegExp(`^<\\/${tag}>\\s*$`, "m");
+    let safety = 0;
+    while (openRx.test(resolved) && closeRx.test(resolved) && safety++ < 20) {
+      const openIdx = resolved.search(openRx);
+      const closeIdx = resolved.search(closeRx);
+      if (openIdx === -1 || closeIdx === -1 || closeIdx <= openIdx) break;
+      const before = resolved.slice(0, openIdx);
+      const between = resolved.slice(openIdx, closeIdx).replace(openRx, "");
+      const after = resolved.slice(closeIdx).replace(closeRx, "");
+      const tagged = between.split("\n").map(line =>
+        line.trim() ? `<${tag}>${line}</${tag}>` : ""
+      ).join("\n");
+      resolved = before + tagged + after;
+    }
+  }
+  return resolved.split("\n").map(line =>
+    `<div style="margin:0 0 8px;padding:0;line-height:1.55;font-family:Arial,sans-serif;font-size:12pt;color:#111;">${parseLineToHtml(line) || "<br>"}</div>`
   ).join("");
 }
 
-// ─── AI PROVIDER ─────────────────────────────────────────────────────────────
-// Supports both Anthropic (Claude) and OpenAI (GPT-4o). Toggle in Settings.
-function getProvider() {
-  return localStorage.getItem("sermon_ai_provider") || "anthropic";
-}
-function setProvider(p) {
-  localStorage.setItem("sermon_ai_provider", p);
-}
-function getApiKey() {
-  const p = getProvider();
-  return localStorage.getItem(p === "openai" ? "sermon_openai_key" : "sermon_anthropic_key") || "";
-}
-function setApiKey(key) {
-  const p = getProvider();
-  localStorage.setItem(p === "openai" ? "sermon_openai_key" : "sermon_anthropic_key", key);
-}
+// ─── AI PROVIDER (Cloudflare Worker Proxy) ───────────────────────────────────
+// All AI requests go through /api/ai — API keys are stored as Cloudflare secrets.
+// No API keys in the browser.
 
 async function callAI({ system, messages, maxTokens = 4000, model = null }) {
-  const provider = getProvider();
-  const apiKey = getApiKey();
-  if (!apiKey) throw new Error(`No API key set. Go to Settings > API Key to add your ${provider === "openai" ? "OpenAI" : "Anthropic"} key.`);
+  const res = await fetch("/api/ai", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      system: system || undefined,
+      messages: (messages || []).map(m => ({ role: m.role, content: m.content })),
+      maxTokens,
+      model: model || undefined,
+      stream: false,
+    }),
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message || data.error);
+  if (!data.content || !data.content[0]) throw new Error("No response received.");
+  return data.content[0].text || "";
+}
 
-  if (provider === "openai") {
-    const resolvedModel = model || "gpt-4o";
-    const apiMessages = [];
-    if (system) apiMessages.push({ role: "system", content: system });
-    messages.forEach(m => apiMessages.push({ role: m.role, content: m.content }));
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
-      body: JSON.stringify({ model: resolvedModel, max_tokens: maxTokens, messages: apiMessages }),
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-    if (!data.choices || !data.choices[0]) throw new Error("No response received from OpenAI.");
-    return data.choices[0].message.content || "";
+// Streaming version — calls onChunk(textDelta) as text arrives, returns full text
+async function callAIStream({ system, messages, maxTokens = 4000, model = null, onChunk, signal }) {
+  const res = await fetch("/api/ai", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      system: system || undefined,
+      messages: (messages || []).map(m => ({ role: m.role, content: m.content })),
+      maxTokens,
+      model: model || undefined,
+      stream: true,
+    }),
+    signal,
+  });
 
-  } else {
-    // Anthropic Claude
-    const resolvedModel = model || "claude-sonnet-4-6";
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true",
-      },
-      body: JSON.stringify({
-        model: resolvedModel,
-        max_tokens: maxTokens,
-        system: system || undefined,
-        messages: messages.map(m => ({ role: m.role, content: m.content })),
-      }),
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-    if (!data.content || !data.content[0]) throw new Error("No response received from Anthropic.");
-    return data.content[0].text || "";
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Stream request failed." }));
+    throw new Error(err.error?.message || err.error || "Stream error.");
   }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let full = "";
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() || "";
+
+    for (const line of lines) {
+      if (!line.startsWith("data: ")) continue;
+      const payload = line.slice(6).trim();
+      if (payload === "[DONE]") continue;
+      try {
+        const evt = JSON.parse(payload);
+        // Anthropic streaming events
+        if (evt.type === "content_block_delta" && evt.delta?.text) {
+          full += evt.delta.text;
+          if (onChunk) onChunk(evt.delta.text);
+        }
+      } catch { /* skip unparseable lines */ }
+    }
+  }
+  return full;
 }
 
 // ─── FIREBASE CLIENT ─────────────────────────────────────────────────────────
@@ -226,8 +305,11 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "287738824362",
   appId: "1:287738824362:web:85fb5d22120c513dfaf2d3",
 };
-const fbApp = window.firebase ? firebase.initializeApp(FIREBASE_CONFIG) : null;
-const db = fbApp ? firebase.firestore() : null;
+// Initialize Firebase (firebase/compat allows the existing API style)
+const fbApp = firebase.apps.length === 0
+  ? firebase.initializeApp(FIREBASE_CONFIG)
+  : firebase.apps[0];
+const db = firebase.firestore();
 
 // ─── CLOUD PROJECTS (Firebase Firestore) ─────────────────────────────────────
 window.cloudProjects = {
