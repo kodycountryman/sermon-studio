@@ -4543,7 +4543,8 @@ function WorkshopView({ onExit, onGenerate, voiceProfile, t }) {
 
 // ─── APP ─────────────────────────────────────────────────────────────────────
 function App() {
-  const [locked, setLocked] = useState(() => sessionStorage.getItem("sermon_unlocked") !== "1");
+  const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
+  const [locked, setLocked] = useState(() => isDev ? false : sessionStorage.getItem("sermon_unlocked") !== "1");
   const [modeId, setModeId]         = useState("outline");
   const [input, setInput]           = useState("");
   const [output, setOutput]         = useState("");
