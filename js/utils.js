@@ -379,3 +379,13 @@ function parseTheoSections(text, secs) {
   if (lines.length) out[key] = lines.join("\n").trim();
   return out;
 }
+
+// ─── ES MODULE COMPAT ─────────────────────────────────────────────────────────
+// When loaded as an ES module via Vite, function declarations are module-scoped.
+// Assigning to window makes them accessible to app.jsx without explicit imports.
+if (typeof window !== 'undefined') {
+  Object.assign(window, {
+    stripTags, rawToHtml, callAI, callAIStream,
+    countWords, extractTitle, parseTheoSections, esc, parseLineToHtml,
+  });
+}
