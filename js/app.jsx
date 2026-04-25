@@ -868,7 +868,7 @@ function HistPanel({ history, onLoad, onDelete, onClose, t, inline, loadedId }) 
       <div style={{flex:1,overflowY:"auto",padding:"4px 12px 14px"}}
         ref={el=>{if(el){el.style.setProperty("--sb-thumb",t.accent);el.style.setProperty("--sb-track",t.panelBg);}}}>
         {filtered.length === 0 && (
-          <p style={{color:t.textFaint,fontFamily:"Inter,sans-serif",fontSize:12,textAlign:"center",marginTop:24}}>{search?`No results for "${search}"`:tab==="all"?"Nothing here yet.":"No "+tab+" content yet."}</p>
+          <p style={{color:t.textMuted,fontFamily:"Inter,sans-serif",fontSize:12,textAlign:"center",marginTop:24}}>{search?`No results for "${search}"`:tab==="all"?"Nothing here yet.":"No "+tab+" content yet."}</p>
         )}
           {filtered.length > 0 && filtered.map(item => {
               const plain = stripTags(item.output||"");
@@ -4552,7 +4552,7 @@ function App() {
   const [lastInput, setLastInput]   = useState("");
   const [loading, setLoading]       = useState(false);
   const [error, setError]           = useState("");
-  const [history, setHistory]       = useState([]);
+  const [history, setHistory]       = useState(KODY_SERMONS);
   const [length, setLength]         = useState("25");
   const [themeKey, setThemeKey]     = useState("burnt");
   // sidebar: null = collapsed icon rail only, or one of "idea"|"history"|"settings"
