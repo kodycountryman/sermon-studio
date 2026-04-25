@@ -4230,6 +4230,33 @@ function BriefSection({ title, value, placeholder, t }) {
 }
 
 // ─── WORKSHOP VIEW ────────────────────────────────────────────────────────────
+const WORKSHOP_SAVE_KEY = "sermon_workshop-session";
+
+function loadWorkshopSession() {
+  try {
+    const raw = localStorage.getItem(WORKSHOP_SAVE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    // Must have messages and a savedAt timestamp
+    if (!parsed.messages || !parsed.savedAt) return null;
+    return parsed;
+  } catch { return null; }
+}
+
+function saveWorkshopSession(stageIdx, messages, brief) {
+  try {
+    // Don't save if there are no real messages
+    if (!messages || messages.length === 0) return;
+    localStorage.setItem(WORKSHOP_SAVE_KEY, JSON.stringify({
+      stageIdx, messages, brief, savedAt: Date.now()
+    }));
+  } catch { /* localStorage full or unavailable */ }
+}
+
+function clearWorkshopSession() {
+  try { localStorage.removeItem(WORKSHOP_SAVE_KEY); } catch {}
+}
+
 function WorkshopView({ onExit, onGenerate, voiceProfile, t }) {
   const [stageIdx, setStageIdx] = useState(0);
   const [messages, setMessages] = useState([]);
@@ -4239,12 +4266,23 @@ function WorkshopView({ onExit, onGenerate, voiceProfile, t }) {
     scripture:"", context:"", bigIdea:"",
     points:[], illustrations:[], application:"", callToAction:""
   });
+  const [savedSession, setSavedSession] = useState(() => loadWorkshopSession());
+  const [sessionRestored, setSessionRestored] = useState(false);
   const chatEndRef = useRef(null);
   const isMobile = useIsMobile();
   const currentStage = WORKSHOP_STAGES[stageIdx];
 
-  // Launch opening message when the workshop loads
-  useEffect(() => { kickStage(0, []); }, []);
+  // Auto-save whenever state changes (skip if we haven't started yet)
+  useEffect(() => {
+    if (sessionRestored || messages.length > 0) {
+      saveWorkshopSession(stageIdx, messages, brief);
+    }
+  }, [stageIdx, messages, brief, sessionRestored]);
+
+  // Launch opening message when the workshop loads fresh (no saved session)
+  useEffect(() => {
+    if (!savedSession) kickStage(0, []);
+  }, []);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior:"smooth" });
@@ -4398,6 +4436,72 @@ function WorkshopView({ onExit, onGenerate, voiceProfile, t }) {
 
   const hasBriefContent = brief.scripture || brief.bigIdea || brief.points?.length > 0 || brief.application;
   const inputStyle = { width:"100%", padding:"10px 14px", background:t.inputBg, border:`1.5px solid ${t.inputBorder}`, borderRadius:8, color:t.inputText, fontFamily:"Inter,sans-serif", fontSize:13, lineHeight:1.5, resize:"none", outline:"none", boxSizing:"border-box" };
+
+  // ── Restore session prompt ──────────────────────────────────────────────────
+  if (savedSession && !sessionRestored) {
+    const ago = (() => {
+      const diff = Date.now() - savedSession.savedAt;
+      const mins = Math.floor(diff / 60000);
+      const hrs  = Math.floor(diff / 3600000);
+      const days = Math.floor(diff / 86400000);
+      if (days > 0) return `${days} day${days>1?"s":""} ago`;
+      if (hrs  > 0) return `${hrs} hour${hrs>1?"s":""} ago`;
+      if (mins > 0) return `${mins} minute${mins>1?"s":""} ago`;
+      return "just now";
+    })();
+    const resumeStage = WORKSHOP_STAGES[savedSession.stageIdx]?.label || "Text Study";
+    const snippets = [
+      savedSession.brief?.scripture && `📖 ${savedSession.brief.scripture}`,
+      savedSession.brief?.bigIdea   && `💡 ${savedSession.brief.bigIdea.slice(0, 60)}${savedSession.brief.bigIdea.length > 60 ? "…" : ""}`,
+      savedSession.brief?.points?.length && `🗂 ${savedSession.brief.points.length} point${savedSession.brief.points.length > 1 ? "s" : ""} outlined`,
+    ].filter(Boolean);
+
+    return (
+      <div style={{display:"flex", flex:1, alignItems:"center", justifyContent:"center", background:t.bg, padding:32}}>
+        <div style={{maxWidth:480, width:"100%", background:t.panelBg, border:`1.5px solid ${t.panelBorder}`, borderRadius:16, padding:32, boxShadow:"0 16px 48px rgba(0,0,0,0.4)"}}>
+          {/* Icon */}
+          <div style={{fontSize:36, marginBottom:12, textAlign:"center"}}>📋</div>
+          <h2 style={{fontFamily:"Inter,sans-serif", fontSize:20, fontWeight:800, color:t.text, margin:"0 0 6px", textAlign:"center"}}>Resume Your Workshop?</h2>
+          <p style={{fontFamily:"Inter,sans-serif", fontSize:13, color:t.textMuted, textAlign:"center", margin:"0 0 20px"}}>
+            You have a saved session from <strong style={{color:t.text}}>{ago}</strong> — currently in the <strong style={{color:t.accent}}>{resumeStage}</strong> stage.
+          </p>
+          {snippets.length > 0 && (
+            <div style={{background:t.surface, border:`1px solid ${t.surfaceBorder}`, borderRadius:10, padding:"12px 16px", marginBottom:20, display:"flex", flexDirection:"column", gap:6}}>
+              {snippets.map((s, i) => (
+                <span key={i} style={{fontFamily:"Inter,sans-serif", fontSize:12, color:t.textMuted}}>{s}</span>
+              ))}
+            </div>
+          )}
+          <div style={{display:"flex", gap:10}}>
+            <button
+              onClick={() => {
+                setStageIdx(savedSession.stageIdx);
+                setMessages(savedSession.messages);
+                setBrief(savedSession.brief);
+                setSessionRestored(true);
+                setSavedSession(null);
+              }}
+              style={{flex:2, padding:"12px 0", background:t.accentGrad, border:"none", borderRadius:9, color:"#fff", fontFamily:"Inter,sans-serif", fontSize:14, fontWeight:700, cursor:"pointer"}}>
+              ▶ Resume Session
+            </button>
+            <button
+              onClick={() => {
+                clearWorkshopSession();
+                setSavedSession(null);
+                setSessionRestored(true);
+                kickStage(0, []);
+              }}
+              style={{flex:1, padding:"12px 0", background:"transparent", border:`1px solid ${t.panelBorder}`, borderRadius:9, color:t.textMuted, fontFamily:"Inter,sans-serif", fontSize:13, fontWeight:600, cursor:"pointer"}}>
+              Start Fresh
+            </button>
+          </div>
+          <button onClick={onExit} style={{display:"block", width:"100%", marginTop:12, background:"transparent", border:"none", color:t.textFaint, fontFamily:"Inter,sans-serif", fontSize:12, cursor:"pointer", textAlign:"center"}}>
+            ← Back to Studio
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="coach-wrap" style={{display:"flex", flex:1, overflow:"hidden"}}>
@@ -4633,6 +4737,7 @@ function App() {
     setWorkshopMode(false);
   }
   function handleWorkshopExport(prompt, targetModeId) {
+    clearWorkshopSession(); // sermon is done — clear the saved session
     setInput(prompt);
     setModeId(targetModeId);
     setOutput("");
@@ -5180,15 +5285,19 @@ function App() {
           onMouseEnter={e=>{ if(!workshopMode){e.currentTarget.style.background=t.surface;e.currentTarget.style.color=t.accent;} }}
           onMouseLeave={e=>{ if(!workshopMode){e.currentTarget.style.background="transparent";e.currentTarget.style.color=t.textMuted;} }}>
           {workshopMode && <span style={{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",width:3,height:26,background:t.accent,borderRadius:"0 3px 3px 0",pointerEvents:"none"}}/>}
-          <span style={{flexShrink:0, display:"flex"}}>
+          <span style={{flexShrink:0, display:"flex", position:"relative"}}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
             </svg>
+            {/* Saved session dot indicator */}
+            {!!loadWorkshopSession() && !workshopMode && (
+              <span style={{position:"absolute",top:-3,right:-3,width:7,height:7,borderRadius:"50%",background:t.accent,border:`1.5px solid ${t.panelBg}`}}/>
+            )}
           </span>
           <span style={{
             fontSize:13, fontWeight:500, whiteSpace:"nowrap",
             opacity: railHovered ? 1 : 0, transition:"opacity 0.12s",
-          }}>Workshop</span>
+          }}>Workshop{!!loadWorkshopSession() && !workshopMode ? <span style={{marginLeft:6,fontSize:10,color:t.accent,fontWeight:700}}>SAVED</span> : ""}</span>
         </button>
       </div>
 
