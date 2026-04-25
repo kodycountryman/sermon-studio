@@ -2734,6 +2734,13 @@ const IconTune = () => (
   </svg>
 );
 
+const IconPlaybook = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+    <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+  </svg>
+);
+
 // ─── SHARED STATIC STYLES ────────────────────────────────────────────────────
 const SS = {
   flexColFull:  { display:"flex", flexDirection:"column", height:"100%", overflow:"hidden" },
@@ -2744,13 +2751,14 @@ const SS = {
 };
 
 const SIDEBAR_ITEMS = [
-  { id:"history",  Icon:IconHistory,  label:"History" },
-  { id:"stories",  Icon:IconStories,  label:"Stories" },
-  { id:"idea",     Icon:IconIdea,     label:"Ideas" },
-  { id:"upload",   Icon:IconUpload,   label:"Upload" },
-  { id:"soap",     Icon:IconSoap,     label:"S.O.A.P" },
-  { id:"makemine", Icon:IconMakeMine, label:"Make It Mine" },
-  { id:"settings", Icon:IconSettings, label:"Settings" },
+  { id:"history",   Icon:IconHistory,  label:"History" },
+  { id:"stories",   Icon:IconStories,  label:"Stories" },
+  { id:"idea",      Icon:IconIdea,     label:"Ideas" },
+  { id:"playbooks", Icon:IconPlaybook, label:"Playbooks" },
+  { id:"upload",    Icon:IconUpload,   label:"Upload" },
+  { id:"soap",      Icon:IconSoap,     label:"S.O.A.P" },
+  { id:"makemine",  Icon:IconMakeMine, label:"Make It Mine" },
+  { id:"settings",  Icon:IconSettings, label:"Settings" },
 ];
 
 // ─── SERMON WORKSHOP CONFIG ───────────────────────────────────────────────────
@@ -4265,6 +4273,421 @@ function clearWorkshopSession() {
   try { localStorage.removeItem(WORKSHOP_SAVE_KEY); } catch {}
 }
 
+// ─── PLAYBOOKS PANEL ─────────────────────────────────────────────────────────
+
+const PLAYBOOK_PREACHERS = [
+  {
+    id: "kody",
+    name: "Kody Countryman",
+    color: "#6C63FF",
+    tagline: "Tension → Truth → Transformation",
+    structures: [
+      {
+        name: "Tension-Release",
+        tag: "Most Used",
+        tagColor: "#6C63FF",
+        desc: "Open with energy, build tension, release it through the gospel. Works for almost any text.",
+        steps: [
+          { type:"Open",       label:"Crowd Connector",       detail:"High-energy hook — story, cultural moment, or observation the whole room feels. Gets people leaning in before they know where you're going." },
+          { type:"Vulnerable", label:"Personal Tension",       detail:"\"Here's where I struggle with this...\" — Kody gets real fast. Disarms the room. Makes the sermon feel like a conversation, not a lecture." },
+          { type:"Scripture",  label:"Text Introduction",      detail:"Weave the scripture in naturally, like you're sharing something you've been chewing on — not announcing a reading. Context and background fast." },
+          { type:"Tension",    label:"The Problem",            detail:"Name the thing. What breaks when we live without this truth? Be specific — a real scenario, not a vague concept." },
+          { type:"Point",      label:"Point 1 — First Truth",  detail:"Land a clear, punchy statement. One sentence. Back it with the text and a short illustration. Don't over-explain it." },
+          { type:"Bridge",     label:"Callback Transition",    detail:"Echo something from the opener — a word, an image, a feeling. Connects the points without saying 'the second thing is.'" },
+          { type:"Point",      label:"Point 2 — Deeper Truth", detail:"Goes a level deeper. Often where Kody gets most personal — a real moment from his life that proves the point." },
+          { type:"Bridge",     label:"Callback Transition",    detail:"Another echo. The room feels the momentum building. Something is coming." },
+          { type:"Point",      label:"Point 3 — Resolution",   detail:"The answer to the tension introduced at the top. Lands with clarity and conviction. Short and strong." },
+          { type:"Gospel",     label:"Gospel Turn",            detail:"\"Here's what Jesus does with all of this...\" — always comes. Not tacked on. Woven into the resolution." },
+          { type:"Apply",      label:"Specific Application",   detail:"One clear, actionable step this week. Not three options — one. Make it concrete." },
+          { type:"Close",      label:"Return & Redeem",        detail:"Come back to the opening image — but it's different now. The same story, redeemed. Lands the whole arc." },
+        ]
+      },
+      {
+        name: "The Journey",
+        tag: "Narrative Text",
+        tagColor: "#059669",
+        desc: "Walk into a biblical story. Put people inside it. Their story is the same story.",
+        steps: [
+          { type:"Open",       label:"Scene Setting",          detail:"Paint the biblical moment so vividly people feel they're standing in it. Sensory details. Don't rush." },
+          { type:"Identify",   label:"We Are ___",             detail:"Name which character the congregation is. \"We are Peter here.\" \"This is us.\" Make the identification explicit." },
+          { type:"Tension",    label:"The Crisis Moment",      detail:"The turning point in the narrative — the moment everything hangs. Don't rush past it. Let it breathe." },
+          { type:"Scripture",  label:"God Shows Up",           detail:"Stay in the text. This is the divine intervention — what God does in the story. Read it slowly." },
+          { type:"Point",      label:"Takeaway 1",             detail:"What does this moment teach us? First lesson pulled from the narrative." },
+          { type:"Point",      label:"Takeaway 2",             detail:"Second lesson — often a surprise that flips an assumption." },
+          { type:"Point",      label:"Takeaway 3",             detail:"Third lesson — the one that should change how they walk out." },
+          { type:"Apply",      label:"Personal Parallel",      detail:"Kody's own story that mirrors the biblical character's journey. Bridge from ancient to now." },
+          { type:"Close",      label:"The Same Invitation",    detail:"The same God who showed up for [biblical character] is showing up for you. The invitation is still open." },
+        ]
+      },
+      {
+        name: "The Single Question",
+        tag: "Topical",
+        tagColor: "#D97706",
+        desc: "Open with THE question your congregation is already asking. Answer it with scripture.",
+        steps: [
+          { type:"Open",       label:"Name The Question",      detail:"State it directly — the question the room is already sitting with. \"What do you do when ___?\" Say it like you've been thinking about it all week." },
+          { type:"Tension",    label:"Why It Matters Now",     detail:"Cultural moment or pastoral reality that makes this question urgent. Why right now? Why this room?" },
+          { type:"Identify",   label:"What The World Says",    detail:"Honestly represent the world's answer. Don't strawman it — some of it makes sense. This builds trust." },
+          { type:"Scripture",  label:"What God Says",          detail:"The text that speaks directly to the question. Let the word do the work — read it clearly, explain it cleanly." },
+          { type:"Point",      label:"The Bridge",             detail:"How does God's answer actually meet real life? This is the application move. Practical and honest." },
+          { type:"Gospel",     label:"The Gospel Root",        detail:"Trace the answer back to the cross. This isn't just wisdom — it's made possible by what Jesus did." },
+          { type:"Apply",      label:"The Challenge",          detail:"What does obedience look like this specific week? Name the decision." },
+          { type:"Close",      label:"The Promise",            detail:"End with what God promises when we walk this out. Hope, not pressure." },
+        ]
+      },
+    ]
+  },
+  {
+    id: "rich",
+    name: "Rich Wilkerson Jr",
+    color: "#EC4899",
+    tagline: "Emotional Movements, Not Logical Steps",
+    structures: [
+      {
+        name: "The Emotional Journey",
+        tag: "Most Used",
+        tagColor: "#EC4899",
+        desc: "Start in culture. Travel through emotion. Arrive at hope. Not points — movements.",
+        steps: [
+          { type:"Open",       label:"Culture Opener",         detail:"\"I was listening to / watching / reading...\" — a current cultural moment that captures the feeling of the sermon. Vous is a culture church. Start there." },
+          { type:"Anchor",     label:"Emotional Anchor",       detail:"\"And it hit me that so many of us feel ___\" — name the emotion everyone's carrying but no one's said out loud. The room leans in." },
+          { type:"Scripture",  label:"Scripture as Feeling",   detail:"Introduce the text as an emotional truth, not an academic one. \"This passage is about what it feels like when ___\"" },
+          { type:"Move",       label:"Movement 1",             detail:"First emotional beat. Not a point — a movement. Something shifts in how the room sees the reality." },
+          { type:"Bridge",     label:"Emotional Pivot",        detail:"\"And I know some of you are sitting with that right now...\" — acknowledge where people are before moving them forward." },
+          { type:"Move",       label:"Movement 2",             detail:"Deeper emotional territory. This is where Rich often shares his own pain point — real, unresolved, human." },
+          { type:"Reframe",    label:"I Wonder If...",         detail:"\"I wonder if what we're really looking for is ___\" — the reframe that opens the door to something better." },
+          { type:"Move",       label:"Movement 3",             detail:"The turn toward hope. Not triumphant — tender. The invitation into something different." },
+          { type:"Close",      label:"The Big Image",          detail:"One vivid, emotional picture at the end. A scene. A moment. Something you can see. Let it hang." },
+        ]
+      },
+      {
+        name: "The Both/And",
+        tag: "Tension Sermons",
+        tagColor: "#7C3AED",
+        desc: "For when two true things are in tension. Honor both. Let Jesus hold them together.",
+        steps: [
+          { type:"Open",       label:"Two Realities",          detail:"Name two things that seem to be in opposition — both real, both true for someone in the room." },
+          { type:"Anchor",     label:"Both In The Room",       detail:"\"Some of you are in the [first] and some in the [second]\" — Rich names both groups with equal tenderness." },
+          { type:"Scripture",  label:"A Passage That Holds Both", detail:"Find the text where God holds both realities simultaneously. This is the theological move." },
+          { type:"Move",       label:"Thread 1 — Honoring Reality A", detail:"Stay fully in reality A. Don't rush to fix it. Honor it with depth and compassion." },
+          { type:"Move",       label:"Thread 2 — Honoring Reality B", detail:"Stay fully in reality B. Same depth, same compassion. Neither reality is wrong for being there." },
+          { type:"Gospel",     label:"Jesus Holds Both",       detail:"\"Here's where Jesus stands in the middle of both...\" — the unification moment. Not a resolution — a presence." },
+          { type:"Personal",   label:"Rich's Both/And Moment", detail:"Rich shares his own experience of holding two things. Makes the theology incarnate." },
+          { type:"Close",      label:"Permission to Live in the Tension", detail:"You don't have to resolve it today. Jesus is in it with you. That's enough. Hope without pressure." },
+        ]
+      },
+      {
+        name: "The Redemption Arc",
+        tag: "Evangelistic",
+        tagColor: "#059669",
+        desc: "Start with the longing culture expresses. Trace it to Jesus as the only real answer.",
+        steps: [
+          { type:"Open",       label:"Cultural Hook",          detail:"High production, culturally resonant moment — the thing everyone's talking about, watching, listening to." },
+          { type:"Anchor",     label:"The Longing Beneath",    detail:"Strip the cultural moment down to the human longing underneath it. Everyone has this longing." },
+          { type:"Scripture",  label:"God Sees The Longing",   detail:"The text where God names that exact longing and moves toward it. Not judgment — recognition." },
+          { type:"Move",       label:"What We're Really Hungry For", detail:"\"Here's what we're actually hungry for...\" — Rich names the deep need beneath the surface want." },
+          { type:"Gospel",     label:"Jesus as Provision",     detail:"Not Jesus as the rule-enforcer — Jesus as the one who actually satisfies the hunger. The real thing the culture's counterfeit is pointing toward." },
+          { type:"Close",      label:"Altar / Response",       detail:"An invitation that feels like relief, not obligation. Come as you are. The door is open." },
+        ]
+      },
+    ]
+  },
+  {
+    id: "chad",
+    name: "Chad Veach",
+    color: "#F59E0B",
+    tagline: "One Lens. Everything Filtered Through It.",
+    structures: [
+      {
+        name: "The Single Lens",
+        tag: "Most Used",
+        tagColor: "#F59E0B",
+        desc: "Establish one idea at the top. Run every application through that same lens. Land with identity.",
+        steps: [
+          { type:"Open",       label:"High Energy Hook",       detail:"Story, statement, or moment that grabs the room immediately. Chad goes fast — no slow warm-up." },
+          { type:"Lens",       label:"Establish The Lens",     detail:"One big idea that everything will be filtered through. Say it clearly. Say it twice. \"Here's the lens: ___\"" },
+          { type:"Scripture",  label:"Text Introduces The Lens", detail:"The passage that gives the lens its weight. Keep it focused — Chad doesn't work with complex texts. Clean and clear." },
+          { type:"Humor",      label:"Release Valve",          detail:"A moment of humor — self-deprecating or observational — before going deep. Chad uses this to keep the room breathing." },
+          { type:"Apply",      label:"Application 1",          detail:"How does the lens change how we see [relationship]? One angle, one question, one answer." },
+          { type:"Apply",      label:"Application 2",          detail:"How does the lens change how we see [identity/calling]? Same lens, new angle." },
+          { type:"Apply",      label:"Application 3",          detail:"How does the lens change how we see [faith/the future]? Widest application — where it all comes together." },
+          { type:"Rally",      label:"Rally Point",            detail:"\"Here's who we are as [Zoe Church]...\" — community identity grounded in the lens. Chad loves a rally moment." },
+          { type:"Close",      label:"Identity Declaration",   detail:"End with who they ARE, not what they must DO. A declaration. \"You are ___. That's not performance — that's just true.\"" },
+        ]
+      },
+      {
+        name: "The Before/After",
+        tag: "Transformation",
+        tagColor: "#059669",
+        desc: "Show life before and after the truth lands. Make the transformation feel real and reachable.",
+        steps: [
+          { type:"Open",       label:"Life Before — The Struggle", detail:"Paint the relatable struggle vividly. This is the \"before\" picture. Be honest — don't sanitize it." },
+          { type:"Tension",    label:"The Rhetorical Question", detail:"\"What if I told you ___?\" — opens the door to something different. Simple, direct." },
+          { type:"Scripture",  label:"The Turning Point Text", detail:"The word that changed everything. Introduce it with \"I found this...\" — personal, not academic." },
+          { type:"Personal",   label:"Testimony Combo",        detail:"Scripture + Chad's real story of transformation. The text became real in his life. Shows what the \"after\" actually looks like." },
+          { type:"Apply",      label:"What Specifically Changes", detail:"Concrete, practical, real. Not \"your attitude\" — your Monday morning. Your phone habit. Your conversation." },
+          { type:"Community",  label:"Community Anchor",       detail:"\"We don't do this alone — this is exactly what the church is for.\" Chad always brings it back to we." },
+          { type:"Close",      label:"Declaration Close",      detail:"A statement of who they're becoming. Not aspirational — declarative. \"This is who you are now.\"" },
+        ]
+      },
+      {
+        name: "The Rally",
+        tag: "Vision / Identity",
+        tagColor: "#DC2626",
+        desc: "Used for big vision moments, series openers, or identity messages. Gets the room fired up.",
+        steps: [
+          { type:"Open",       label:"Big Vision Statement",   detail:"Not a question — a declaration. Something bold and clear that sets the tone for everything that follows." },
+          { type:"Tension",    label:"Why This Matters Now",   detail:"The urgency. What's at stake right now — in culture, in the church, in individuals' lives." },
+          { type:"Identify",   label:"What The Enemy Says",    detail:"Name the lie clearly. Chad doesn't shy from spiritual warfare language. \"The enemy wants you to believe ___\"" },
+          { type:"Scripture",  label:"What God Says",          detail:"The counter-word. Read it like it's alive — because it is. This is the pivot from darkness to light." },
+          { type:"Point",      label:"Truth 1 About Our Identity", detail:"First declaration about who they are. Bold. Short. Unqualified." },
+          { type:"Point",      label:"Truth 2 About Our Identity", detail:"Second declaration — builds on the first. The rhythm matters. Three is the magic number." },
+          { type:"Point",      label:"Truth 3 About Our Identity", detail:"Third declaration — the final, highest truth. Usually the most personal." },
+          { type:"Rally",      label:"\"So We Are Going To...\"", detail:"The call to action — but framed as identity, not obligation. \"People who are ___ do ___\"" },
+          { type:"Close",      label:"Send-Off",               detail:"Short. Punchy. Leave them standing up. Chad's closes don't linger — they launch." },
+        ]
+      },
+    ]
+  },
+  {
+    id: "carl",
+    name: "Carl Lentz",
+    color: "#10B981",
+    tagline: "Successive Revelation. Layer by Layer.",
+    structures: [
+      {
+        name: "Successive Revelation",
+        tag: "Most Iconic",
+        tagColor: "#10B981",
+        desc: "Peel the onion. Each layer reveals something the previous couldn't. Builds toward a breakthrough truth.",
+        steps: [
+          { type:"Open",       label:"Provocative Observation", detail:"An observation that makes the room think. Not a question — an assertion. Something slightly unexpected that reorients attention." },
+          { type:"Surface",    label:"Layer 1 — The Surface",   detail:"Here's what it looks like on the outside. The obvious read. Carl starts where people already are." },
+          { type:"Bridge",     label:"\"Come With Me Here\"",   detail:"Carl's signature transition into scripture. Conversational, direct, a little conspiratorial — like he's about to show you something." },
+          { type:"Scripture",  label:"Revelation 1 — Text Unveils", detail:"The scripture starts pulling back the curtain. First layer of deeper truth." },
+          { type:"Emphasis",   label:"\"Let Me Say That Again\"", detail:"Carl restates the revelation slower, with more weight. He lets the room catch up. Don't rush past this." },
+          { type:"Scripture",  label:"Revelation 2 — Deeper Layer", detail:"Another level. The text continues to work. Silence and pacing matter here — let it breathe." },
+          { type:"Silence",    label:"Intentional Pause",       detail:"Carl actually pauses. Not for effect — to let the truth settle. The room is with him." },
+          { type:"Scripture",  label:"Revelation 3 — Breakthrough Truth", detail:"The final layer. The thing the whole message has been building toward. Clear, heavy, simple." },
+          { type:"Challenge",  label:"\"What Are You Going To Do With That?\"", detail:"Carl doesn't let the room sit passively. Direct address — personal, pointed, not angry." },
+          { type:"Close",      label:"Grace Close",             detail:"Remind them they're covered even if they're not ready to respond today. Grace, not guilt. You can come back to this." },
+        ]
+      },
+      {
+        name: "The Direct Address",
+        tag: "Pastoral / Care",
+        tagColor: "#7C3AED",
+        desc: "Speak directly to a specific type of person in the room. Name their reality with no shame.",
+        steps: [
+          { type:"Open",       label:"\"If You're Someone Who...\"", detail:"Carl opens by speaking to a specific person or situation. Precise, not broad. The people in that category feel seen immediately." },
+          { type:"Tension",    label:"Name It Honestly",        detail:"The real problem, named without shame or performance pressure. Carl doesn't clean up what people are actually dealing with." },
+          { type:"Scripture",  label:"God Addressing That Exact Thing", detail:"Find the text where God speaks directly into that situation. Read it like it was written for this room, this Sunday." },
+          { type:"Gospel",     label:"\"God's Not Surprised By Where You Are\"", detail:"The theological pivot — God's omniscience as comfort, not condemnation. He knew. He came anyway." },
+          { type:"Reframe",    label:"Not Performance, But Presence", detail:"Shift the frame: it's not about getting your act together to earn access — it's about encountering someone who already knows you." },
+          { type:"Close",      label:"Prayer / Invitation",     detail:"Carl closes pastoral sermons with an invitation — often a prayer rather than an altar call. Quiet and real." },
+        ]
+      },
+      {
+        name: "Cultural Confrontation",
+        tag: "Apologetics / Relevant",
+        tagColor: "#D97706",
+        desc: "Take a cultural moment head-on. Don't avoid it — engage it. Show what the Kingdom offers that culture can't.",
+        steps: [
+          { type:"Open",       label:"Take It Head-On",         detail:"Name the cultural moment directly. Carl doesn't ease in — he walks straight at the hard thing. Earns immediate credibility." },
+          { type:"Tension",    label:"\"The World Says ___. But Here's The Thing...\"", detail:"Honestly represent what culture offers, then gently show where it falls short. No mockery — genuine engagement." },
+          { type:"Scripture",  label:"The Word That Speaks To It", detail:"The text that speaks directly to the cultural question. Carl looks for where the Bible was already asking this question." },
+          { type:"Common",     label:"Common Ground",           detail:"What even unbelievers recognize as true here. Carl always finds a point of universal recognition before the distinction." },
+          { type:"Distinction",label:"What The Kingdom Offers", detail:"\"Here's what following Jesus gives you that culture can't deliver...\" — the distinction, made clear without condescension." },
+          { type:"Challenge",  label:"\"You Don't Have To Settle\"", detail:"Carl's core challenge — the life culture promises is smaller than what God actually has. Direct, generous invitation." },
+          { type:"Close",      label:"Hope Close",              detail:"End with what's possible, not what's required. Paint the picture of life with more. Let hope do the heavy lifting." },
+        ]
+      },
+    ]
+  },
+];
+
+const STEP_TYPE_COLORS = {
+  Open:        "#6366F1",
+  Vulnerable:  "#EC4899",
+  Scripture:   "#DC2626",
+  Tension:     "#D97706",
+  Point:       "#2563EB",
+  Bridge:      "#7C3AED",
+  Gospel:      "#059669",
+  Apply:       "#0891B2",
+  Close:       "#64748B",
+  Anchor:      "#DB2777",
+  Move:        "#7C3AED",
+  Reframe:     "#059669",
+  Personal:    "#F59E0B",
+  Identify:    "#2563EB",
+  Lens:        "#D97706",
+  Humor:       "#F59E0B",
+  Rally:       "#DC2626",
+  Surface:     "#64748B",
+  Emphasis:    "#10B981",
+  Silence:     "#6366F1",
+  Challenge:   "#DC2626",
+  Common:      "#059669",
+  Distinction: "#2563EB",
+  Community:   "#10B981",
+};
+
+function PlaybooksPanel({ onClose, t }) {
+  const [activePreaId, setActivePreaId] = useState("kody");
+  const [expandedStruct, setExpandedStruct] = useState(null);
+  const [expandedStep, setExpandedStep] = useState(null);
+
+  const preacher = PLAYBOOK_PREACHERS.find(p => p.id === activePreaId);
+
+  return (
+    <div style={{display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", background:t.panelBg}}>
+      {/* Header */}
+      <div style={{
+        padding:"16px 20px 12px", borderBottom:`1px solid ${t.panelBorder}`,
+        display:"flex", alignItems:"center", justifyContent:"space-between", flexShrink:0,
+      }}>
+        <div>
+          <h2 style={{margin:0, fontSize:15, fontWeight:700, color:t.text}}>Sermon Playbooks</h2>
+          <p style={{margin:"2px 0 0", fontSize:12, color:t.textMuted}}>Full structure models for each preacher</p>
+        </div>
+        <button onClick={onClose} style={{border:"none",background:"none",cursor:"pointer",color:t.textMuted,fontSize:18,lineHeight:1,padding:4}}>✕</button>
+      </div>
+
+      {/* Preacher tabs */}
+      <div style={{
+        display:"flex", gap:4, padding:"10px 16px 0", borderBottom:`1px solid ${t.panelBorder}`,
+        flexShrink:0, overflowX:"auto",
+      }}>
+        {PLAYBOOK_PREACHERS.map(p => {
+          const isA = p.id === activePreaId;
+          return (
+            <button key={p.id} onClick={() => { setActivePreaId(p.id); setExpandedStruct(null); setExpandedStep(null); }}
+              style={{
+                padding:"7px 14px 9px", border:"none", cursor:"pointer", background:"none",
+                fontSize:13, fontWeight: isA ? 700 : 500,
+                color: isA ? p.color : t.textMuted,
+                borderBottom: isA ? `2.5px solid ${p.color}` : "2.5px solid transparent",
+                transition:"all 0.15s", whiteSpace:"nowrap",
+              }}>
+              {p.name.split(" ")[0]}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Content */}
+      <div style={{flex:1, overflowY:"auto", padding:"16px"}}>
+        {/* Preacher header */}
+        <div style={{
+          padding:"12px 14px", borderRadius:10, marginBottom:14,
+          background: `${preacher.color}18`, border:`1px solid ${preacher.color}33`,
+        }}>
+          <div style={{fontSize:16, fontWeight:700, color:preacher.color}}>{preacher.name}</div>
+          <div style={{fontSize:12, color:t.textMuted, marginTop:3, fontStyle:"italic"}}>{preacher.tagline}</div>
+        </div>
+
+        {/* Structures */}
+        {preacher.structures.map((struct, si) => {
+          const isOpen = expandedStruct === si;
+          return (
+            <div key={si} style={{
+              marginBottom:10, borderRadius:10, overflow:"hidden",
+              border:`1px solid ${isOpen ? preacher.color + "55" : t.panelBorder}`,
+              background: isOpen ? `${preacher.color}08` : t.surface,
+              transition:"all 0.2s",
+            }}>
+              {/* Structure header — click to expand */}
+              <button onClick={() => { setExpandedStruct(isOpen ? null : si); setExpandedStep(null); }}
+                style={{
+                  width:"100%", padding:"13px 16px", display:"flex", alignItems:"center",
+                  justifyContent:"space-between", border:"none", cursor:"pointer",
+                  background:"transparent", textAlign:"left", gap:8,
+                }}>
+                <div style={{flex:1, minWidth:0}}>
+                  <div style={{display:"flex", alignItems:"center", gap:8, marginBottom:3}}>
+                    <span style={{fontSize:14, fontWeight:700, color:t.text}}>{struct.name}</span>
+                    <span style={{
+                      fontSize:10, fontWeight:700, padding:"2px 7px", borderRadius:20,
+                      background: struct.tagColor + "22", color: struct.tagColor,
+                    }}>{struct.tag}</span>
+                  </div>
+                  <div style={{fontSize:12, color:t.textMuted, lineHeight:1.4}}>{struct.desc}</div>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={t.textMuted} strokeWidth="2"
+                  style={{flexShrink:0, transform: isOpen ? "rotate(180deg)" : "none", transition:"transform 0.2s"}}>
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+
+              {/* Steps list */}
+              {isOpen && (
+                <div style={{padding:"0 12px 12px"}}>
+                  {/* Step count badge */}
+                  <div style={{fontSize:11, color:t.textMuted, marginBottom:8, paddingLeft:4}}>
+                    {struct.steps.length}-step structure
+                  </div>
+                  {struct.steps.map((step, idx) => {
+                    const stepColor = STEP_TYPE_COLORS[step.type] || "#64748B";
+                    const isStepOpen = expandedStep === `${si}-${idx}`;
+                    return (
+                      <div key={idx}
+                        onClick={() => setExpandedStep(isStepOpen ? null : `${si}-${idx}`)}
+                        style={{
+                          display:"flex", alignItems:"flex-start", gap:10,
+                          padding:"8px 10px", marginBottom:4, borderRadius:8,
+                          cursor:"pointer",
+                          background: isStepOpen ? `${stepColor}12` : "transparent",
+                          border: `1px solid ${isStepOpen ? stepColor + "44" : "transparent"}`,
+                          transition:"all 0.15s",
+                        }}
+                        onMouseEnter={e => { if(!isStepOpen) e.currentTarget.style.background = t.panelBg; }}
+                        onMouseLeave={e => { if(!isStepOpen) e.currentTarget.style.background = "transparent"; }}
+                      >
+                        {/* Step number */}
+                        <div style={{
+                          width:22, height:22, borderRadius:"50%", flexShrink:0,
+                          background: stepColor + "22", color: stepColor,
+                          display:"flex", alignItems:"center", justifyContent:"center",
+                          fontSize:11, fontWeight:700, marginTop:1,
+                        }}>{idx + 1}</div>
+
+                        {/* Step content */}
+                        <div style={{flex:1, minWidth:0}}>
+                          <div style={{display:"flex", alignItems:"center", gap:7, flexWrap:"wrap"}}>
+                            <span style={{fontSize:10, fontWeight:700, color:stepColor, letterSpacing:"0.04em", textTransform:"uppercase"}}>{step.type}</span>
+                            <span style={{fontSize:13, fontWeight:600, color:t.text}}>{step.label}</span>
+                          </div>
+                          {isStepOpen && (
+                            <div style={{
+                              marginTop:6, fontSize:13, color:t.textMuted, lineHeight:1.55,
+                              borderLeft:`2px solid ${stepColor}44`, paddingLeft:10,
+                            }}>
+                              {step.detail}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Expand caret */}
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={t.textFaint} strokeWidth="2"
+                          style={{flexShrink:0, marginTop:5, transform: isStepOpen ? "rotate(180deg)" : "none", transition:"transform 0.2s"}}>
+                          <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── SERMON WORKSHOP ─────────────────────────────────────────────────────────
+
 function WorkshopView({ onExit, onGenerate, voiceProfile, t }) {
   const [stageIdx, setStageIdx] = useState(0);
   const [messages, setMessages] = useState([]);
@@ -5405,6 +5828,10 @@ function App() {
         )}
         {sidePanel === "makemine" && (
           <MakeMinePanel onClose={()=>setSidePanel(null)} t={t} onLaunchCoach={launchCoach} onPdfDone={handlePdfDone}/>
+        )}
+
+        {sidePanel === "playbooks" && (
+          <PlaybooksPanel onClose={()=>setSidePanel(null)} t={t}/>
         )}
       </div>
 
