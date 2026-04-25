@@ -3,6 +3,16 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'https://sermon-studio.pages.dev',
+        changeOrigin: true,
+        secure: true,
+      }
+    }
+  },
   build: {
     outDir: 'dist',
     rollupOptions: {

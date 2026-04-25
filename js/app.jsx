@@ -810,24 +810,58 @@ function histItemMeta(item) {
   return null;
 }
 
+const HIST_SORT_OPTIONS = [
+  { key:"newest",  label:"Newest first",   fn:(a,b) => b.timestamp - a.timestamp },
+  { key:"oldest",  label:"Oldest first",   fn:(a,b) => a.timestamp - b.timestamp },
+  { key:"title",   label:"Title A→Z",      fn:(a,b) => (a.title||"").localeCompare(b.title||"") },
+  { key:"type",    label:"Type",           fn:(a,b) => (a.modeId||"").localeCompare(b.modeId||"") },
+  { key:"words",   label:"Word count ↓",   fn:(a,b) => countWords(b.output||"") - countWords(a.output||"") },
+];
+
 function HistPanel({ history, onLoad, onDelete, onClose, t, inline, loadedId }) {
   const [tab, setTab] = useState("all");
   const [search, setSearch] = useState("");
   const [confirmId, setConfirmId] = useState(null);
+  const [sortKey, setSortKey] = useState("newest");
+  const [showSort, setShowSort] = useState(false);
 
-  const filtered = [...history].reverse().filter(item => {
-    if (tab !== "all" && item.modeId !== tab) return false;
-    if (!search.trim()) return true;
-    const q = search.toLowerCase(), plain = stripTags(item.output||"").toLowerCase();
-    return (item.title||"").toLowerCase().includes(q)||(item.input||"").toLowerCase().includes(q)||plain.includes(q);
-  });
+  const sortFn = HIST_SORT_OPTIONS.find(s => s.key === sortKey)?.fn || HIST_SORT_OPTIONS[0].fn;
+
+  const filtered = [...history]
+    .filter(item => {
+      if (tab !== "all" && item.modeId !== tab) return false;
+      if (!search.trim()) return true;
+      const q = search.toLowerCase(), plain = stripTags(item.output||"").toLowerCase();
+      return (item.title||"").toLowerCase().includes(q)||(item.input||"").toLowerCase().includes(q)||plain.includes(q);
+    })
+    .sort(sortFn);
 
   return (
     <div style={{...SS.flexColFull}}>
       <div style={{padding:"14px 16px 10px",borderBottom:`1px solid ${t.panelBorder}`,flexShrink:0}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
           <h3 style={{margin:0,fontFamily:"Inter,sans-serif",color:t.text,fontSize:16,fontWeight:700}}>History</h3>
-          <button onClick={onClose} style={{background:"transparent",border:`1px solid ${t.panelBorder}`,borderRadius:6,color:t.textMuted,cursor:"pointer",padding:"4px 10px",fontFamily:"Inter,sans-serif",fontSize:12}}>✕ Close</button>
+          <div style={{display:"flex",alignItems:"center",gap:6}}>
+            {/* Sort dropdown */}
+            <div style={{position:"relative"}}>
+              <button onClick={()=>setShowSort(p=>!p)}
+                style={{background:showSort?t.surface:"transparent",border:`1px solid ${t.panelBorder}`,borderRadius:6,color:t.textMuted,cursor:"pointer",padding:"4px 8px",fontFamily:"Inter,sans-serif",fontSize:11,display:"flex",alignItems:"center",gap:4}}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="9" y1="18" x2="15" y2="18"/></svg>
+                {HIST_SORT_OPTIONS.find(s=>s.key===sortKey)?.label}
+              </button>
+              {showSort && (
+                <div style={{position:"absolute",right:0,top:"calc(100% + 4px)",background:t.panelBg,border:`1px solid ${t.panelBorder}`,borderRadius:8,zIndex:50,minWidth:140,boxShadow:"0 8px 24px rgba(0,0,0,0.4)",overflow:"hidden"}}>
+                  {HIST_SORT_OPTIONS.map(opt => (
+                    <button key={opt.key} onClick={()=>{setSortKey(opt.key);setShowSort(false);}}
+                      style={{display:"block",width:"100%",textAlign:"left",padding:"8px 12px",background:sortKey===opt.key?t.surface:"transparent",border:"none",color:sortKey===opt.key?t.accent:t.text,fontFamily:"Inter,sans-serif",fontSize:12,cursor:"pointer",fontWeight:sortKey===opt.key?700:400}}>
+                      {sortKey===opt.key?"✓ ":""}{opt.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button onClick={onClose} style={{background:"transparent",border:`1px solid ${t.panelBorder}`,borderRadius:6,color:t.textMuted,cursor:"pointer",padding:"4px 10px",fontFamily:"Inter,sans-serif",fontSize:12}}>✕ Close</button>
+          </div>
         </div>
         <div style={SS.posRel}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={t.textMuted} strokeWidth="2.5" strokeLinecap="round" style={{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)"}}>
@@ -4718,25 +4752,34 @@ function App() {
   }, []);
 
   async function saveHist(item) {
-    const u = [...history, item].slice(-80); setHistory(u);
-    try { await window.storage.set("sermon-history-v3", JSON.stringify(u)); } catch(e) {}
+    // Use functional updater to always read the latest state (avoids stale closure)
+    setHistory(prev => {
+      const u = [...prev.filter(h => h.id !== item.id), item].slice(-80);
+      window.storage.set("sermon-history-v3", JSON.stringify(u)).catch(()=>{});
+      return u;
+    });
     window.cloudHistory.save(item).catch(()=>{});
   }
   async function delHist(id) {
-    const item = history.find(h => h.id === id);
-    const u = history.filter(h => h.id !== id); setHistory(u);
-    try { await window.storage.set("sermon-history-v3", JSON.stringify(u)); } catch(e) {}
+    let deleted = null;
+    setHistory(prev => {
+      deleted = prev.find(h => h.id === id) || null;
+      const u = prev.filter(h => h.id !== id);
+      window.storage.set("sermon-history-v3", JSON.stringify(u)).catch(()=>{});
+      return u;
+    });
     // Soft delete: schedule cloud delete after 8 seconds, allow undo
-    if (item) {
+    setTimeout(() => {
+      if (!deleted) return;
       const undoKey = "hist-" + id;
-      setUndoItems(prev => [...prev, { key: undoKey, type: "history", id, item, title: item.title }]);
+      setUndoItems(prev => [...prev, { key: undoKey, type: "history", id, item: deleted, title: deleted.title }]);
       const timer = setTimeout(() => {
         window.cloudHistory.delete(id).catch(()=>{});
         undoTimersRef.current.delete(undoKey);
         setUndoItems(prev => prev.filter(u => u.key !== undoKey));
       }, 8000);
       undoTimersRef.current.set(undoKey, timer);
-    }
+    }, 0);
   }
   async function addStory(story) {
     const u = [...stories, story]; setStories(u);
