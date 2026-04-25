@@ -4506,6 +4506,416 @@ const PLAYBOOK_PREACHERS = [
   },
 ];
 
+// keyed as "preacherId-structureIndex"
+const PLAYBOOK_EXAMPLES = {
+
+  // ── KODY ──────────────────────────────────────────────────────────────────
+
+  "kody-0": {
+    title: "When God is Late",
+    scripture: "John 11:1–44 (Lazarus)",
+    note: "Tension-Release structure. Three callback transitions, gospel turn at verse 35, closes by returning to the opening image of waiting.",
+    manuscript: `There's a thing that happens when you're waiting on God and it feels like He's running behind schedule.
+
+You prayed. You believed. You told people. And then — nothing. The clock is ticking and heaven seems quiet, and somewhere in the back of your head a voice whispers: maybe this time, He won't come through.
+
+I've been there. More than I'd like to admit from this stage.
+
+There's a moment in John 11 I can't get past. Mary and Martha send word to Jesus — "Lord, the one you love is sick." He gets the message. And He stays where He is. For two more days. Intentionally waited.
+
+By the time Jesus arrives, Lazarus has been in the tomb four days. Martha walks out to meet Him and says — "If you had been here, my brother would not have died." That's not anger. That's grief from someone whose faith ran straight into timing they didn't understand.
+
+Here's Point One: His timing isn't late. It's purposeful. There's a version of this story where Jesus heals Lazarus from a distance, Lazarus recovers, and the village says "wow, that's cool." But Jesus waited for the version where resurrection would be required. He waited for the miracle that nobody could explain away.
+
+The thing you're waiting on right now? He hasn't forgotten. He's not scrambling. He's building toward something your timeline can't hold.
+
+That moment in verse 35 — "Jesus wept" — stops me every time. He knows He's about to raise Lazarus. He knows how this ends. And He still weeps with Mary and Martha in their grief. He doesn't rush past the pain because He knows the outcome.
+
+The God who holds the ending still sits in it with you. That's Point Two. He is not emotionally distant from what you're going through just because He knows it resolves.
+
+Point Three is where I want to land: death doesn't get the final word in the Kingdom. Jesus walks to the tomb. "Take away the stone." They do. He calls Lazarus out by name. And Lazarus walks out.
+
+Still in the grave clothes. But out.
+
+Here's your step this week. Stop rehearsing the worst-case scenario. Every time that voice starts — "it's too late, too broken, too far gone" — you remind it: resurrection is still on the table.
+
+He called Lazarus by name. He knows yours. The waiting isn't the end of the story.`
+  },
+
+  "kody-1": {
+    title: "Get Out of the Boat",
+    scripture: "Matthew 14:22–33 (Peter Walks on Water)",
+    note: "Journey structure. Places listener as Peter. Three takeaways pulled from the narrative. Personal parallel before the close.",
+    manuscript: `Picture it: 3am. Middle of the Sea of Galilee. Twelve guys in a boat who have been rowing against a headwind for hours. Exhausted. Scared. And then they see something on the water moving toward them.
+
+They think it's a ghost. Because nothing in their experience has prepared them for what they're actually seeing.
+
+It's Jesus. Walking on water. In the middle of the storm they can't get through on their own.
+
+We are Peter in this story. I want you to hold that. Not the disciples who stayed in the boat — Peter. The one who saw the impossible and said "if that's You, tell me to come."
+
+So Jesus says come. And Peter gets out of the boat.
+
+The crisis comes fast. He's out. He's walking. He's doing something that should be physically impossible. And then he looks at the wind. And he starts to sink.
+
+"Lord, save me."
+
+Four words. No theology. No eloquence. The most honest prayer you'll ever pray.
+
+Jesus reaches out and catches him. Immediately. Not after Peter got his faith back together. Immediately.
+
+Three things.
+
+You cannot walk on water from inside the boat. The other eleven never got wet. They also never walked on water. The risk is real — and it's the only way you get to experience the impossible. Playing it safe has a cost we don't talk about enough.
+
+Sinking doesn't disqualify you. Peter sank, and he still made it into every history book of the faith. He preached at Pentecost. He planted churches. He built the early church. His sinking moment didn't define him. His reaching moment did.
+
+The hand that caught Peter is the same one reaching for you right now. You might be mid-sink. Water at your chin, out of options. Four words. "Lord, save me." That's enough.
+
+I'll be honest with you. There was a season where I had over-committed, under-delivered, and disappointed people I cared about. I didn't sink gracefully — I went down fast. And in the middle of that, I found out the hand was still there.
+
+Jesus didn't lecture Peter on the boat ride back. He walked him back. Quietly. Together.
+
+If you're in the water — reach. He's already there.`
+  },
+
+  "kody-2": {
+    title: "What Do You Do When You Feel Alone?",
+    scripture: "Psalm 139:7–12",
+    note: "Single Question structure. Names the question without the church answer, works through what the world offers, brings it to the text, bridges to the gospel, ends with a specific practice.",
+    manuscript: `Let me ask you something — and I want the real answer, not the church answer.
+
+What do you do when you feel completely, utterly alone?
+
+Not lonely in a "I should call a friend" kind of way. Alone like you're in a room full of people and you're behind glass. Alone like you're not sure anyone would notice if you quietly disappeared.
+
+If that hit you — you're in good company. And I don't mean that as a platitude.
+
+Here's what the world offers: connection. Community. Therapy. Better friendships. All of it is genuinely good. None of it gets to the bottom of the feeling. Because the thing underneath the loneliness isn't a social problem — it's a presence problem.
+
+Psalm 139, verse 7: "Where can I go from your Spirit? Where can I flee from your presence?" David goes through a whole list — if I go up to heaven, if I make my bed in the depths, if I fly to the edge of the ocean — there is no location outside of God's presence. Not church. Not your quiet time. Not when you've got it together. The farthest point of space. The deepest point of your shame. His presence is already there.
+
+The gospel makes this specific. Jesus didn't just teach about closeness — He crossed the distance. He took on flesh and moved into the neighborhood. God didn't send a message about presence — He sent His presence.
+
+Here's the bridge: this doesn't mean you'll always feel it. David wrote Psalm 22 too — "My God, my God, why have you forsaken me?" Same guy. But Psalm 139 tells us the truth underneath the feeling.
+
+The challenge is this: when the alone feeling hits, don't immediately try to solve it with activity. Sit in it for thirty seconds and say — "You're here. I may not feel it. But You're here." Let the theology speak louder than the emotion, just for a moment.
+
+He is here. He has always been here. And He isn't going anywhere.`
+  },
+
+  // ── RICH ──────────────────────────────────────────────────────────────────
+
+  "rich-0": {
+    title: "El Roi — The God Who Sees",
+    scripture: "Genesis 16:1–13 (Hagar in the Wilderness)",
+    note: "Emotional Journey structure. Culture opener, emotional anchor, three movements, 'I wonder if' reframe. No altar call — closes with the name of God as the landing.",
+    manuscript: `I was driving home last week and I had the music off — which almost never happens for me — and this thought kind of settled over me.
+
+I wonder how many people are going through something that nobody else knows about.
+
+Not something small. Something heavy. Something they haven't told their closest person. And they're just carrying it. In silence. Going through all the motions while this thing is happening underneath.
+
+I think that's more of us than we'd like to say.
+
+There's a story in Genesis 16 I don't think we talk about enough. Because it's uncomfortable and messy and the people in it don't come out looking great. But there's something in it I can't leave alone.
+
+Hagar was a servant. No power. No agency. No choice in most of what happened to her. She was used and then cast out when she became inconvenient. She ran into the wilderness — alone and pregnant with no plan and nowhere to go.
+
+This is the emotional condition of a lot of people in this room.
+
+And I know some of you are sitting with that right now. The feeling of being used. The feeling of being seen only as long as you were useful. The confusion of a story that looks nothing like what you thought it would.
+
+The wilderness is not a metaphor to Hagar. She is literally alone in the desert with nothing.
+
+And then God shows up.
+
+Not to fix the situation immediately. Not to hand her a five-step plan. He shows up and He sees her. And she names God — she's one of the only people in scripture who gives God a name. She calls Him El Roi.
+
+The God who sees me.
+
+I wonder if what some of us need today isn't more answers. I wonder if what we need is to know that we've been seen.
+
+You haven't been invisible. The thing you're carrying — He knows. The room you've been crying in at night — He was there. The version of your life nobody else sees — He sees all of it.
+
+El Roi. The God who sees you. You're not in the wilderness alone.`
+  },
+
+  "rich-1": {
+    title: "Lord I Believe; Help My Unbelief",
+    scripture: "Mark 9:17–27 (Father of the Boy with a Spirit)",
+    note: "Both/And structure. Opens by naming two groups. Honors both realities fully before unifying. Closes with Rich's own confession. No resolution — permission to stay in the tension.",
+    manuscript: `There are two kinds of people in this room this morning.
+
+There are people who right now feel solid in their faith. God is near. Prayer is real. They're in a season of clarity — of confidence, of knowing.
+
+And there are people for whom faith right now feels like something they're holding onto by their fingernails. Doubt is louder than certainty. Prayer feels like talking to a ceiling. They're here because they came last week and they haven't quit yet.
+
+I want to speak to both of you at the same time. Because I think the gospel actually does.
+
+Mark 9. A father brings his son to Jesus. The son has been tormented since childhood. The father has tried everything. And he says — "If you can do anything, have compassion on us and help us."
+
+Jesus responds: "If you can? All things are possible for one who believes."
+
+And the father says: "I believe; help my unbelief."
+
+Both things. Same sentence. Same person. To the same Jesus.
+
+And Jesus healed his son anyway.
+
+I want to spend a moment in the doubt before I rush to the faith — because I think we shame it too fast in the church. Doubt is not the opposite of faith. Pretending is. This father didn't pretend. He stood in front of Jesus and said: here's what I have. It's not clean. It's not enough. But it's real.
+
+And then the faith — whatever is left in you, however small, however scared — it doesn't have to be certain to be real. Five percent faith is still faith. Trembling belief is still belief.
+
+Here's where Jesus stands: in the middle of both.
+
+I'll tell you something I don't say often enough. There are things I preach that I'm still learning to believe for myself. There are passages I've read a thousand times where the gap between what they promise and what I feel is wide. I believe; help my unbelief. That's not failure. That's probably the most honest prayer in the Bible.
+
+You don't have to resolve the tension to belong to God. He's already in it with you.`
+  },
+
+  "rich-2": {
+    title: "The Wrong Wells",
+    scripture: "John 4:1–26 (Woman at the Well)",
+    note: "Redemption Arc structure. Opens in culture (the achievement myth), strips to the longing beneath, brings the text as encounter not religion, closes with an altar invitation framed as relief not obligation.",
+    manuscript: `The world tells us something, and most of us believe it — at least a little.
+
+It says: more will finally be enough.
+
+More success. More recognition. More love from the right person. More of whatever you've been reaching for — and when you finally get there, the thing underneath the reaching will quiet down.
+
+I used to believe that. I chased it. And I've watched people I love chase it, get there — and find the thing still wasn't quiet.
+
+There is a longing underneath the reaching. Something that achievement, romance, and approval are all circling without being able to name. The thing that makes success feel hollow even on the day you celebrate it.
+
+John 4. Jesus is at a well in Samaria. He has no cultural reason to be there. Jewish teachers didn't go through Samaria. Didn't speak to Samaritan women. Definitely didn't engage with someone who had been married five times and was now with someone she wasn't married to.
+
+He's there waiting for her.
+
+He asks for water. She's confused by the whole interaction. And then He says: "Whoever drinks of this water will be thirsty again, but whoever drinks of the water that I give them will never be thirsty again."
+
+And she says: "Sir, give me this water."
+
+I think what she's actually saying is — please. Whatever it is you're describing. I've been to five wells. I know the pattern — I drink, I'm thirsty again. Give me the thing that finally ends the reaching.
+
+Here's what we're really hungry for: not the next thing. We're hungry for presence. To be fully known and fully loved at the same time. For an encounter with something that doesn't run out. That's what Jesus is offering at the well — not religion, not rules. An encounter.
+
+If you've never said yes to that — I want to invite you today. Not because you have to have it together. The woman at the well absolutely did not. But because the longing you've been carrying is real.
+
+You've just been reaching in the wrong direction.
+
+Come to the right well.`
+  },
+
+  // ── CHAD ──────────────────────────────────────────────────────────────────
+
+  "chad-0": {
+    title: "You Are Not Who They Said You Were",
+    scripture: "Ephesians 2:10 — \u201cGod's masterpiece\u201d",
+    note: "Single Lens structure. Lens established in the opening story. Scripture gives it weight. Humor before depth. Three applications through the same lens. Closes with declaration, not instruction.",
+    manuscript: `Someone told me a lie once. And I almost believed it.
+
+I was young, trying to figure out who I was, and someone I trusted told me something about myself that wasn't true. And I carried it. For years. Let it shape my decisions, my relationships, the ceiling I put on my own life.
+
+Maybe you know what that's like.
+
+Here is the lens for everything we're going to talk about today: identity is everything. Who you believe you are determines how you live. It determines what risks you'll take, what relationships you'll enter, what you think you deserve. Everything flows through the lens of identity.
+
+Ephesians 2:10. Paul writes: "For we are God's masterpiece, created in Christ Jesus to do good works, which God prepared in advance for us to do."
+
+God's masterpiece. Not a B-list word. A masterpiece isn't a rough draft or a side project. It's the thing you stand back from when it's done and say — this is what I was making.
+
+Okay, real quick — can I just acknowledge how weird that is? We talk about identity in Christ like it's a bumper sticker. But sit with this for a second. The God who made the universe looked at you and said: masterpiece. Not "well, I worked with what I had." Masterpiece.
+
+(And I see some of you making the face right now like, "he doesn't know what I've done." Stay with me.)
+
+Here's how the lens changes things.
+
+It changes how you handle criticism. When someone's opinion of you conflicts with God's opinion of you — you have to decide which one is actually true. Not which one feels more true. Which one IS true. If God says masterpiece, the criticism doesn't get to be your identity.
+
+It changes how you pursue relationships. You stop settling for less than what you are. You stop taking what you can get because some part of you thinks you don't deserve better. Masterpiece doesn't do that.
+
+It changes how you face the future. When you know who you are, you're not paralyzed by uncertainty. Your identity isn't determined by the outcome — it's already settled.
+
+You are not who they said you were. You are who He says you are.
+
+That's not a feeling. That's just true.`
+  },
+
+  "chad-1": {
+    title: "The Grace You Can't Earn Back",
+    scripture: "Luke 15:11–24 (The Prodigal Son)",
+    note: "Before/After structure. Opens as the older brother (the performance trap). Rhetorical pivot with 'what if I told you.' Verse 20 as the turning point. Chad's personal moment of receiving grace. Specific application: self-talk after failure. Community anchor. Declaration close.",
+    manuscript: `Let me paint you a picture.
+
+You're the older brother. You've been doing everything right for years. Showing up. Working hard. Never embarrassing the family. And then your little brother takes his inheritance, blows it on a life you'd never let yourself live, hits rock bottom, and comes crawling home.
+
+And your father — your father — throws a party.
+
+A lot of us are the older brother in ways we don't talk about in church. We're performing. We're earning. And somewhere under all the effort, we're terrified that if we stop, we might not be loved anymore. We've turned grace into something we have to maintain.
+
+What if I told you grace isn't something you earn back?
+
+Luke 15:20. The prodigal is still a long way off. He's rehearsing his speech — "make me one of your servants." He's got a whole plan to work his way back to acceptable.
+
+And then the father sees him. And runs.
+
+Doesn't walk. Runs. Throws his arms around him before a single word of the speech comes out.
+
+The grace was already moving before the son got his act together.
+
+That moment changed something for me. I had this idea that I needed to get cleaned up before I could come back to God. Like I had to prove something first. And I read this text and realized — He was already running. He was already there. The whole time I was rehearsing my speech, He was already moving.
+
+Here's what specifically changes: the way you talk to yourself after you fail.
+
+The old script says — you messed up, now you need to earn your way back, there's a debt to pay. The new script says — you messed up, come home, the door is already open. Same failure. Completely different trajectory.
+
+And we don't do this alone. That's the thing about the father in this story — he was watching. He was looking. He was ready. That's the church at its best: people watching for each other, ready to run.
+
+You are not the sum of your worst decisions.
+You are the child the Father ran toward.
+Come home.`
+  },
+
+  "chad-2": {
+    title: "The Church Has Not Left the Building",
+    scripture: "Matthew 16:18 \u2014 \u201cThe gates of hell shall not prevail\u201d",
+    note: "Rally structure. Bold declaration opener. Names the enemy's narrative honestly. Pivots to Matthew 16:18 read as verdict not aspiration. Three identity truths. Action call framed as identity. Short, punchy send-off.",
+    manuscript: `I want to say something I believe with everything in me.
+
+The church is the most powerful force for change on the planet.
+
+Not the most popular. Not the most praised. Not the one that gets the best press. The most powerful.
+
+I know some of you are thinking — he doesn't know what's happening out there. You've read the numbers. You've heard the criticism, some of which is fair. You've watched people walk away. I get it.
+
+But I want to put something in front of you that is more true than the narrative.
+
+Here's what's at stake right now. People in our city who don't know they're loved. Kids growing up without a vision for what their life could be. Families fracturing without anyone to run toward them. That's what's happening while we debate whether the church still matters.
+
+And here's what the enemy says. Declining. Irrelevant. Had its moment and that moment is over. Young people are leaving and the institution is crumbling.
+
+Now here's what Jesus said.
+
+Matthew 16:18. "On this rock I will build my church, and the gates of hell will not prevail against it."
+
+Not "probably not." Not "haven't yet." Will not. Categorical. The verdict is already in. This thing is not going to lose.
+
+Here's what is true about us.
+
+We are called. Not by accident. Not by good intention alone. By the living God who looked at this generation and this city and decided He needed people here. You being in this room is not a coincidence.
+
+We are equipped. You have more than you think. The same Spirit that raised Jesus from the dead lives in you. I say that because I want you to stop living beneath your ceiling.
+
+We are promised victory. Not easy. Not uncomplicated. Promised that the gates do not win. That's a different way to walk into a hard week.
+
+So here's what we're going to do. Stop waiting for permission. Step into what we've been built for. Get in the room. Bring someone with you. Don't wait until you feel ready.
+
+The church has not left the building. We're just getting started.`
+  },
+
+  // ── CARL ──────────────────────────────────────────────────────────────────
+
+  "carl-0": {
+    title: "Father, Forgive Them",
+    scripture: "Luke 23:34 (Words from the Cross)",
+    note: "Successive Revelation structure. Provocative opener that flips the common view of forgiveness. Three layered revelations through the cross text. Intentional pacing with silence beat. Closes with a question, not a directive. Grace close — no pressure to resolve today.",
+    manuscript: `What if forgiveness isn't for the person you're forgiving?
+
+I want to sit with that before we go anywhere.
+
+We've been taught that forgiveness is something we offer — a transaction where we release someone from what they owe us. And I think that's true as far as it goes. But I think most of us have been looking at it from the wrong direction.
+
+Here's how it looks from the outside: forgiveness is letting someone off the hook. If I forgive you, I'm saying what you did was okay. I'm handing over a consequence you deserve and walking away with nothing. Why would anyone do that voluntarily?
+
+Come with me to Luke 23.
+
+Jesus is on the cross. Not abstractly — physically. The nails are in. The crowd is mocking. The soldiers who drove the nails are beneath Him, dividing up His clothes. And He says — while this is happening, before they stop, before they ask — "Father, forgive them, for they know not what they do."
+
+Let me say that again slowly.
+
+While they are actively doing the thing. Before any repentance. Before any remorse. Forgiveness.
+
+That's not Jesus saying what they did was fine. That's Jesus demonstrating what forgiveness actually is.
+
+This is the second layer. Forgiveness is not approval — it's release. When you hold unforgiveness, you hold a chain. And the other end isn't attached to the person who hurt you. It's attached to you. You are carrying the weight of the record. They may not even know it. They may not even care. And you are in prison because of something they did.
+
+Take a breath.
+
+Here is the third thing — and I want you to sit in it.
+
+The cross is the final word on what forgiveness costs. It cost everything. It bought freedom — for us, yes — but the mechanism is release. The release of debt. And that same mechanism is available to you for what someone owes you. Not because they deserve it. Because you were not made to carry it.
+
+Is there someone you've been carrying? Is there a record you've been keeping that is costing you more than it's costing them?
+
+You don't have to feel like forgiving. You don't have to resolve this today. But I want you to hold the question.
+
+You don't have to let them off the hook.
+You just have to let yourself off the chain.`
+  },
+
+  "carl-1": {
+    title: "For Everyone Who Thinks It's Too Late",
+    scripture: "John 21:1–19 (Peter's Restoration)",
+    note: "Direct Address structure. Opens speaking to one specific person/situation — someone who has failed badly and gone into hiding. Walks through Peter's pattern honestly. Shows Jesus showing up uninvited. Closes with an invitation, not a challenge.",
+    manuscript: `If you're someone who has made a massive mistake — and I mean something you look back at and it still has the capacity to make you feel sick — and you've been wondering whether there's a way back...
+
+This is for you. Not in general. For you specifically. I don't want you to sit here and apply this to a vague someone else.
+
+Here's what happens after you blow it badly. You go back to what you know. You try to outwork the guilt. You put on performance like armor — if I can do enough right things, if I can stay busy enough, if I can be useful enough — maybe I won't have to face what happened.
+
+That's Peter in John 21.
+
+He denied Jesus three times. Publicly. Loudly. Then Jesus was crucified. And Peter — and I love that this is what happened — Peter went fishing. He went back to what he was doing before any of this started. Like if he could just return to normal, maybe the story could reset.
+
+And here's what God did with that.
+
+Jesus showed up at the lake. Made breakfast. Sat with them. And then had one specific conversation that rebuilt everything the failure had torn down.
+
+Three denials. Three "do you love me" moments. One for each. Jesus didn't let Peter carry the weight of three — He addressed every one. Specifically. Intentionally.
+
+God is not surprised by where you are. He knew before you did. He knew while you were doing it. He is not scrambling to figure out what to do with you now.
+
+Here is what this is not: a performance review. Jesus didn't sit down with Peter and say "here's what you need to improve, here's your probationary period." He sat down with Peter and said — do you love me? And when Peter said yes: "feed my sheep." Back to work. The assignment was still the assignment.
+
+You don't need to clean yourself up before you come back. Come back and let Him do the cleaning.
+
+The invitation is open. Not once you've figured it out. Right now.`
+  },
+
+  "carl-2": {
+    title: "The Most Successful Losing Strategy",
+    scripture: "Matthew 16:26 \u2014 \u201cWhat does it profit a man...\u201d",
+    note: "Cultural Confrontation structure. Opens with an observation that lands even for skeptics. Represents the world's offer honestly. Finds universal common ground before making the distinction. Closes with hope, not guilt — makes the invitation feel like an upgrade, not a rebuke.",
+    manuscript: `We live in the most successful, most connected, most anxious generation in human history.
+
+That is not a religious opinion. The data on anxiety, depression, loneliness — it tracks upward as the metrics of achievement go up. We are getting more of what we said we wanted. And we are not doing well.
+
+The world has an answer to that. It says: you just don't have enough yet. Get more. Achieve more. Bigger platform, bigger career, bigger net worth. The problem is always that you haven't reached the threshold. Keep going.
+
+I want to have an honest conversation about that.
+
+Matthew 16:26. Jesus says: "What does it profit a man if he gains the whole world and forfeits his soul?"
+
+Before I say anything else — I want to acknowledge something. Even if you're not following Jesus, even if you're sitting here skeptically, there is something in that question that resonates. I have met very few people who would, when they're being completely honest, say: "I want to win everything and lose myself in the process, and I'm fine with that trade." Nobody actually wants that. Everybody, at some level, knows that's a bad deal.
+
+That's the common ground. We all know there's a version of success that isn't actually the thing.
+
+Here's what the Kingdom offers that the other version can't.
+
+Significance that outlasts the achievement. There are ways you can love, serve, and show up for people — that last after the platform is gone and the career ends and the metrics stop mattering. That's not inspirational language. That's a different economy operating by different rules.
+
+You don't have to settle for impressive and empty. You can keep running the playbook the world handed you. It might work by the metrics that matter there. Or you can ask a different question about what you're actually building.
+
+I've sat with people near the end of their lives. Not one has said "I wish I'd worked more hours." Not one has said "I wish I'd cared more about what they thought."
+
+What does it actually profit you?
+
+You were made for more than the world's version of winning. That's not a guilt trip. That's an invitation.`
+  },
+
+};
+
 const STEP_TYPE_COLORS = {
   Open:        "#6366F1",
   Vulnerable:  "#EC4899",
@@ -4537,8 +4947,17 @@ function PlaybooksPanel({ onClose, t }) {
   const [activePreaId, setActivePreaId] = useState("kody");
   const [expandedStruct, setExpandedStruct] = useState(null);
   const [expandedStep, setExpandedStep] = useState(null);
+  const [showManuscript, setShowManuscript] = useState(null); // "preacherId-si"
+  const [copied, setCopied] = useState(null);
 
   const preacher = PLAYBOOK_PREACHERS.find(p => p.id === activePreaId);
+
+  function handleCopy(text, key) {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(key);
+      setTimeout(() => setCopied(null), 1800);
+    });
+  }
 
   return (
     <div style={{display:"flex", flexDirection:"column", height:"100%", overflow:"hidden", background:t.panelBg}}>
@@ -4549,7 +4968,7 @@ function PlaybooksPanel({ onClose, t }) {
       }}>
         <div>
           <h2 style={{margin:0, fontSize:15, fontWeight:700, color:t.text}}>Sermon Playbooks</h2>
-          <p style={{margin:"2px 0 0", fontSize:12, color:t.textMuted}}>Full structure models for each preacher</p>
+          <p style={{margin:"2px 0 0", fontSize:12, color:t.textMuted}}>Structure models + full example manuscripts</p>
         </div>
         <button onClick={onClose} style={{border:"none",background:"none",cursor:"pointer",color:t.textMuted,fontSize:18,lineHeight:1,padding:4}}>✕</button>
       </div>
@@ -4562,7 +4981,7 @@ function PlaybooksPanel({ onClose, t }) {
         {PLAYBOOK_PREACHERS.map(p => {
           const isA = p.id === activePreaId;
           return (
-            <button key={p.id} onClick={() => { setActivePreaId(p.id); setExpandedStruct(null); setExpandedStep(null); }}
+            <button key={p.id} onClick={() => { setActivePreaId(p.id); setExpandedStruct(null); setExpandedStep(null); setShowManuscript(null); }}
               style={{
                 padding:"7px 14px 9px", border:"none", cursor:"pointer", background:"none",
                 fontSize:13, fontWeight: isA ? 700 : 500,
@@ -4590,6 +5009,11 @@ function PlaybooksPanel({ onClose, t }) {
         {/* Structures */}
         {preacher.structures.map((struct, si) => {
           const isOpen = expandedStruct === si;
+          const exKey = `${preacher.id}-${si}`;
+          const example = PLAYBOOK_EXAMPLES[exKey];
+          const msKey = `${preacher.id}-${si}`;
+          const msOpen = showManuscript === msKey;
+
           return (
             <div key={si} style={{
               marginBottom:10, borderRadius:10, overflow:"hidden",
@@ -4598,7 +5022,7 @@ function PlaybooksPanel({ onClose, t }) {
               transition:"all 0.2s",
             }}>
               {/* Structure header — click to expand */}
-              <button onClick={() => { setExpandedStruct(isOpen ? null : si); setExpandedStep(null); }}
+              <button onClick={() => { setExpandedStruct(isOpen ? null : si); setExpandedStep(null); if(isOpen) setShowManuscript(null); }}
                 style={{
                   width:"100%", padding:"13px 16px", display:"flex", alignItems:"center",
                   justifyContent:"space-between", border:"none", cursor:"pointer",
@@ -4620,13 +5044,14 @@ function PlaybooksPanel({ onClose, t }) {
                 </svg>
               </button>
 
-              {/* Steps list */}
+              {/* Steps list + Example Manuscript */}
               {isOpen && (
-                <div style={{padding:"0 12px 12px"}}>
+                <div style={{padding:"0 12px 14px"}}>
                   {/* Step count badge */}
                   <div style={{fontSize:11, color:t.textMuted, marginBottom:8, paddingLeft:4}}>
                     {struct.steps.length}-step structure
                   </div>
+
                   {struct.steps.map((step, idx) => {
                     const stepColor = STEP_TYPE_COLORS[step.type] || "#64748B";
                     const isStepOpen = expandedStep === `${si}-${idx}`;
@@ -4676,6 +5101,78 @@ function PlaybooksPanel({ onClose, t }) {
                       </div>
                     );
                   })}
+
+                  {/* Example Manuscript toggle */}
+                  {example && (
+                    <div style={{marginTop:10}}>
+                      <button
+                        onClick={() => setShowManuscript(msOpen ? null : msKey)}
+                        style={{
+                          width:"100%", padding:"9px 14px", borderRadius:8, border:`1px solid ${preacher.color}44`,
+                          background: msOpen ? `${preacher.color}18` : "transparent",
+                          color: msOpen ? preacher.color : t.textMuted,
+                          cursor:"pointer", display:"flex", alignItems:"center", gap:8,
+                          fontSize:13, fontWeight:600, transition:"all 0.15s",
+                        }}>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                          <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+                          <line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                        {msOpen ? "Hide" : "See"} Example Manuscript — "{example.title}"
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                          style={{marginLeft:"auto", transform: msOpen ? "rotate(180deg)" : "none", transition:"transform 0.2s"}}>
+                          <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                      </button>
+
+                      {msOpen && (
+                        <div style={{
+                          marginTop:8, borderRadius:10, overflow:"hidden",
+                          border:`1px solid ${preacher.color}33`,
+                          background: t.panelBg,
+                        }}>
+                          {/* Manuscript header */}
+                          <div style={{
+                            padding:"10px 14px", borderBottom:`1px solid ${preacher.color}22`,
+                            background:`${preacher.color}10`,
+                            display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:10,
+                          }}>
+                            <div>
+                              <div style={{fontSize:13, fontWeight:700, color:preacher.color}}>{example.title}</div>
+                              <div style={{fontSize:11, color:t.textMuted, marginTop:2}}>{example.scripture}</div>
+                              <div style={{
+                                fontSize:11, color:t.textMuted, marginTop:5, lineHeight:1.45,
+                                fontStyle:"italic", maxWidth:400,
+                              }}>
+                                {example.note}
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => handleCopy(example.manuscript, msKey)}
+                              title="Copy manuscript"
+                              style={{
+                                flexShrink:0, padding:"5px 10px", borderRadius:6, border:`1px solid ${preacher.color}44`,
+                                background: copied===msKey ? preacher.color : "transparent",
+                                color: copied===msKey ? "#fff" : preacher.color,
+                                cursor:"pointer", fontSize:11, fontWeight:600, transition:"all 0.2s",
+                              }}>
+                              {copied===msKey ? "Copied!" : "Copy"}
+                            </button>
+                          </div>
+
+                          {/* Manuscript body */}
+                          <div style={{
+                            padding:"16px", fontSize:14, lineHeight:1.75,
+                            color:t.text, whiteSpace:"pre-wrap", fontFamily:"Georgia, serif",
+                            maxHeight:520, overflowY:"auto",
+                          }}>
+                            {example.manuscript}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
