@@ -2768,8 +2768,16 @@ const WORKSHOP_STAGES = [
     stageContext:"Help the pastor develop 3 main points that each support the big idea and flow naturally to the next. Think through: the opening hook/story, how tension is set up, how each point connects to the text, and how it all lands in the closing invitation. Once points are solid, update the brief with the points array."
   },
   {
+    id:"transitions", label:"Transitions", desc:"How each section flows — no list language, just momentum.",
+    stageContext:"This is where the sermon stops feeling like a list and starts feeling like a river. Help the pastor find the bridge between each section. They do NOT want to say 'the second thing is' or 'let me talk about this for a second.' They want it to just flow in. For each transition between points: what is the emotional or spiritual thread connecting them? What callback, image, question, or contrast carries the listener naturally into the next idea? Work through each transition one at a time. Techniques available: callback (reference something said earlier), emotional-pivot (shift feeling without announcing it), rhetorical-question (a question that pulls them forward), tension-release (let the weight land then reset), echo-line (repeat a phrase with new meaning), contrast (from problem to answer without saying 'but'). Ask which transition they want to tackle first. Once decided, update the brief with a transitions array."
+  },
+  {
+    id:"voice", label:"Voice & Tone", desc:"Who is this sermon? What is the blend?",
+    stageContext:"Help the pastor dial in the voice and structural approach for this specific sermon. Ask: Is this full Kody? Or is there some Rich in it — more culturally electric, living in the emotional tension longer? Some Chad — faster pace, identity-focused, everything through one lens? Some Carl — more confrontational, direct audience address, silence as a tool? Walk them through each preacher whose structural DNA might sharpen this specific message. It does not need to be a perfect mix — it might be 90 percent Kody with 10 percent Rich just in how the transitions feel. Suggest a blend based on the brief so far: the scripture, the audience, the tone of the big idea. Once decided, update the brief with a voiceBlend object like {kody: 80, rich: 20}. Make sure the blend adds up to 100."
+  },
+  {
     id:"illustrate", label:"Illustrations", desc:"Find the story for each point that makes it unforgettable.",
-    stageContext:"For each main point, help the pastor find the right illustration. Ask about personal stories first — lived experience always hits harder than generic examples. If they don't have a personal story, help them find a cultural or biblical one. One great story per point. Once illustrations are decided, add them to the brief."
+    stageContext:"For each main point, help the pastor find the right illustration. Ask about personal stories first — lived experience always hits harder than generic examples. If they do not have a personal story, help them find a cultural or biblical one. One great story per point. The illustration should not just support the point — it should make the point impossible to forget. Once illustrations are decided, add them to the brief."
   },
   {
     id:"application", label:"Application", desc:"What does this sermon ask people to actually do or decide?",
@@ -4264,7 +4272,8 @@ function WorkshopView({ onExit, onGenerate, voiceProfile, t }) {
   const [sending, setSending] = useState(false);
   const [brief, setBrief] = useState({
     scripture:"", context:"", bigIdea:"",
-    points:[], illustrations:[], application:"", callToAction:""
+    points:[], transitions:[], illustrations:[],
+    voiceBlend:{}, application:"", callToAction:""
   });
   const [savedSession, setSavedSession] = useState(() => loadWorkshopSession());
   const [sessionRestored, setSessionRestored] = useState(false);
@@ -4300,7 +4309,7 @@ function WorkshopView({ onExit, onGenerate, voiceProfile, t }) {
 
   function applyUpdate(update) {
     if (!update) return;
-    const valid = ["scripture","context","bigIdea","points","illustrations","application","callToAction"];
+    const valid = ["scripture","context","bigIdea","points","transitions","voiceBlend","illustrations","application","callToAction"];
     setBrief(prev => {
       const next = { ...prev };
       if (update.field !== undefined && update.value !== undefined) {
@@ -4320,7 +4329,7 @@ function WorkshopView({ onExit, onGenerate, voiceProfile, t }) {
 
   async function kickStage(idx, existingMessages) {
     const s = WORKSHOP_STAGES[idx];
-    const briefAtStart = { scripture:"", context:"", bigIdea:"", points:[], illustrations:[], application:"", callToAction:"" };
+    const briefAtStart = { scripture:"", context:"", bigIdea:"", points:[], transitions:[], illustrations:[], voiceBlend:{}, application:"", callToAction:"" };
     const voiceAppendix = buildVoiceAppendix(voiceProfile);
     const sys = `${WORKSHOP_SYSTEM}${voiceAppendix}\n\nCURRENT STAGE: ${s.label}\nSTAGE COACHING GOAL: ${s.stageContext}\n\nCURRENT SERMON BRIEF:\n${JSON.stringify(briefAtStart, null, 2)}`;
 
@@ -4429,6 +4438,8 @@ function WorkshopView({ onExit, onGenerate, voiceProfile, t }) {
     if (b.bigIdea)            parts.push(`BIG IDEA: ${b.bigIdea}`);
     if (b.points?.length)     parts.push(`MAIN POINTS:\n${b.points.map((p,i)=>`${i+1}. ${p.title}${p.summary?` — ${p.summary}`:""}`).join("\n")}`);
     if (b.illustrations?.length) parts.push(`ILLUSTRATIONS:\n${b.illustrations.map((il,i)=>`${i+1}. For point "${il.point}": ${il.illustration}`).join("\n")}`);
+    if (b.transitions?.length)   parts.push(`TRANSITIONS:\n${b.transitions.map((tr,i)=>`${i+1}. ${tr.fromPoint} to ${tr.toPoint}: [${tr.technique}] ${tr.bridgeIdea}`).join("\n")}`);
+    if (b.voiceBlend && Object.keys(b.voiceBlend).length) parts.push(`VOICE BLEND: ${Object.entries(b.voiceBlend).filter(([,p])=>p>0).sort((a,b)=>b[1]-a[1]).map(([id,p])=>`${id} ${p}%`).join(", ")}`);
     if (b.application)        parts.push(`APPLICATION: ${b.application}`);
     if (b.callToAction)       parts.push(`CALL TO ACTION: ${b.callToAction}`);
     return parts.join("\n\n");
@@ -4561,6 +4572,48 @@ function WorkshopView({ onExit, onGenerate, voiceProfile, t }) {
               <div style={{fontFamily:"Inter,sans-serif", fontSize:12, color:t.textFaint, fontStyle:"italic"}}>Not decided yet</div>
             )}
           </div>
+
+          {/* Transitions */}
+          {brief.transitions && brief.transitions.length > 0 && (
+            <div style={{padding:"10px 14px", borderBottom:`1px solid ${t.surfaceBorder}`}}>
+              <div style={{fontFamily:"Inter,sans-serif", fontSize:10, fontWeight:700, color:t.accent, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:6}}>Transitions</div>
+              {brief.transitions.map((tr, i) => (
+                <div key={i} style={{marginBottom:8}}>
+                  <div style={{fontFamily:"Inter,sans-serif", fontSize:11, fontWeight:600, color:t.text, marginBottom:2}}>
+                    {tr.fromPoint} → {tr.toPoint}
+                  </div>
+                  <div style={{fontFamily:"Inter,sans-serif", fontSize:11, color:t.textMuted, lineHeight:1.5}}>
+                    <span style={{background:t.surface, borderRadius:4, padding:"1px 6px", fontSize:10, fontWeight:600, color:t.accent, marginRight:4, textTransform:"uppercase", letterSpacing:"0.05em"}}>{tr.technique}</span>
+                    {tr.bridgeIdea}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Voice Blend */}
+          {brief.voiceBlend && Object.keys(brief.voiceBlend).length > 0 && (
+            <div style={{padding:"10px 14px", borderBottom:`1px solid ${t.surfaceBorder}`}}>
+              <div style={{fontFamily:"Inter,sans-serif", fontSize:10, fontWeight:700, color:t.accent, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:8}}>Voice Blend</div>
+              {Object.entries(brief.voiceBlend)
+                .filter(([,pct]) => pct > 0)
+                .sort((a,b) => b[1]-a[1])
+                .map(([id, pct]) => {
+                  const names = {kody:"Kody",rich:"Rich",chad:"Chad",carl:"Carl",charles:"Charles",steven:"Steven",td:"T.D.",craig:"Craig",louie:"Louie"};
+                  return (
+                    <div key={id} style={{marginBottom:6}}>
+                      <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:3}}>
+                        <span style={{fontFamily:"Inter,sans-serif", fontSize:11, fontWeight:600, color:t.text}}>{names[id]||id}</span>
+                        <span style={{fontFamily:"Inter,sans-serif", fontSize:11, fontWeight:700, color:t.accent}}>{pct}%</span>
+                      </div>
+                      <div style={{height:4, borderRadius:2, background:t.surfaceBorder}}>
+                        <div style={{height:4, borderRadius:2, background:t.accentGrad, width:`${pct}%`, transition:"width 0.3s"}}/>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          )}
 
           {/* Illustrations */}
           {brief.illustrations?.length > 0 && (
