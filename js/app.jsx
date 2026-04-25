@@ -4876,7 +4876,8 @@ function App() {
   // Sidebar: narrow icon-only rail always, panel slides out beside it
   const [sidebarW, setSidebarW] = useState(380);
   const SIDEBAR_W = sidebarW;
-  const RAIL_W = 56;
+  const [railHovered, setRailHovered] = useState(false);
+  const RAIL_W = railHovered ? 180 : 56;
   const dragRef = useRef(null);
 
   function startDrag(e) {
@@ -5054,32 +5055,49 @@ function App() {
         </div>
       )}
 
-      {/* ── LEFT: narrow icon rail (always 56px) ── */}
+      {/* ── LEFT: icon rail (expands on hover) ── */}
       <div className="desktop-rail" style={{
         width:RAIL_W, flexShrink:0, display:"flex", flexDirection:"column",
-        alignItems:"center", paddingTop:14, paddingBottom:14, gap:4,
+        alignItems:"flex-start", paddingTop:14, paddingBottom:14, gap:4,
         borderRight:`1px solid ${t.panelBorder}`, background:t.panelBg, zIndex:20,
-      }}>
+        transition:"width 0.2s cubic-bezier(0.4,0,0.2,1)",
+        overflow:"hidden",
+      }}
+        onMouseEnter={()=>setRailHovered(true)}
+        onMouseLeave={()=>setRailHovered(false)}
+      >
         {/* Logo mark — home button */}
         <div title="Home" onClick={()=>{ setOutput(""); setInput(""); setVersionStack([]); setActiveVersion(null); setSidePanel(null); }}
-          style={{marginBottom:8, userSelect:"none", cursor:"pointer", padding:4, borderRadius:8, transition:"opacity 0.15s"}}
+          style={{
+            marginBottom:8, userSelect:"none", cursor:"pointer", padding:4, borderRadius:8,
+            transition:"opacity 0.15s", display:"flex", alignItems:"center", gap:10,
+            paddingLeft:17, width:"100%",
+          }}
           onMouseEnter={e=>e.currentTarget.style.opacity="0.65"}
           onMouseLeave={e=>e.currentTarget.style.opacity="1"}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill={t.accent}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill={t.accent} style={{flexShrink:0}}>
             <path d="M12 2C9 6 7 9 7 13a5 5 0 0 0 10 0c0-4-2-7-5-11zm0 15a3 3 0 0 1-3-3c0-2.5 1.2-4.8 3-7.5 1.8 2.7 3 5 3 7.5a3 3 0 0 1-3 3z"/>
           </svg>
+          <span style={{
+            fontSize:13, fontWeight:600, color:t.accent, whiteSpace:"nowrap",
+            opacity: railHovered ? 1 : 0, transition:"opacity 0.15s",
+          }}>Sermon Studio</span>
         </div>
-        <div style={{width:32, height:1, background:t.surfaceBorder, marginBottom:4}}/>
+        <div style={{width: railHovered ? "calc(100% - 16px)" : 32, height:1, background:t.surfaceBorder, marginBottom:4, marginLeft:8, transition:"width 0.2s"}}/>
 
         {SIDEBAR_ITEMS.map(item => {
           const isActive = sidePanel === item.id;
           return (
             <button key={item.id}
               onClick={() => toggleSide(item.id)}
-              title={item.label}
+              title={railHovered ? undefined : item.label}
               style={{
                 position:"relative",
-                width:40, height:40, display:"flex", alignItems:"center", justifyContent:"center",
+                width: railHovered ? "calc(100% - 16px)" : 40,
+                marginLeft: railHovered ? 8 : 8,
+                height:40, display:"flex", alignItems:"center",
+                justifyContent:"flex-start", gap:10,
+                paddingLeft: railHovered ? 9 : 11,
                 border:"none", borderRadius:9, cursor:"pointer",
                 background: isActive ? t.btnActiveBg : "transparent",
                 color: isActive ? "#fff" : t.textMuted,
@@ -5089,19 +5107,27 @@ function App() {
               onMouseLeave={e=>{ if(!isActive){e.currentTarget.style.background="transparent";e.currentTarget.style.color=t.textMuted;} }}>
               {/* VS Code-style active edge bar */}
               {isActive && <span style={{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",width:3,height:26,background:t.accent,borderRadius:"0 3px 3px 0",pointerEvents:"none"}}/>}
-              <item.Icon/>
+              <span style={{flexShrink:0, display:"flex"}}><item.Icon/></span>
+              <span style={{
+                fontSize:13, fontWeight:500, whiteSpace:"nowrap",
+                opacity: railHovered ? 1 : 0, transition:"opacity 0.12s",
+              }}>{item.label}</span>
             </button>
           );
         })}
 
         {/* Workshop launch button */}
-        <div style={{width:32, height:1, background:t.surfaceBorder, margin:"4px 0"}}/>
+        <div style={{width: railHovered ? "calc(100% - 16px)" : 32, height:1, background:t.surfaceBorder, margin:"4px 0 4px 8px", transition:"width 0.2s"}}/>
         <button
           onClick={launchWorkshop}
-          title="Sermon Workshop"
+          title={railHovered ? undefined : "Sermon Workshop"}
           style={{
-            position:"relative", width:40, height:40,
-            display:"flex", alignItems:"center", justifyContent:"center",
+            position:"relative",
+            width: railHovered ? "calc(100% - 16px)" : 40,
+            marginLeft:8,
+            height:40, display:"flex", alignItems:"center",
+            justifyContent:"flex-start", gap:10,
+            paddingLeft: railHovered ? 9 : 11,
             border:"none", borderRadius:9, cursor:"pointer",
             background: workshopMode ? t.btnActiveBg : "transparent",
             color: workshopMode ? "#fff" : t.textMuted,
@@ -5110,10 +5136,15 @@ function App() {
           onMouseEnter={e=>{ if(!workshopMode){e.currentTarget.style.background=t.surface;e.currentTarget.style.color=t.accent;} }}
           onMouseLeave={e=>{ if(!workshopMode){e.currentTarget.style.background="transparent";e.currentTarget.style.color=t.textMuted;} }}>
           {workshopMode && <span style={{position:"absolute",left:0,top:"50%",transform:"translateY(-50%)",width:3,height:26,background:t.accent,borderRadius:"0 3px 3px 0",pointerEvents:"none"}}/>}
-          {/* Quill/workshop icon */}
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-          </svg>
+          <span style={{flexShrink:0, display:"flex"}}>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+          </span>
+          <span style={{
+            fontSize:13, fontWeight:500, whiteSpace:"nowrap",
+            opacity: railHovered ? 1 : 0, transition:"opacity 0.12s",
+          }}>Workshop</span>
         </button>
       </div>
 
