@@ -2845,9 +2845,9 @@ function MakeMinePanel({ onClose, t, onLaunchCoach, onPdfDone }) {
     if (onLaunchCoach) onLaunchCoach(project);
   }
 
-  function launchCoachWithContent(content, title, sourceType, sourceFile) {
+  function launchCoachWithContent(content, title, sourceType, sourceFile, isHtml) {
     const id = "proj-" + Date.now();
-    const project = { id, title: title || fileName || "Uploaded Sermon", content, sourceType: sourceType || "upload", sourceFile: sourceFile || fileName, coachMessages: [], createdAt: new Date().toISOString() };
+    const project = { id, title: title || fileName || "Uploaded Sermon", content, sourceType: sourceType || "upload", sourceFile: sourceFile || fileName, coachMessages: [], createdAt: new Date().toISOString(), isHtml: !!isHtml };
     window.cloudProjects.save(project).catch(()=>{});
     if (onLaunchCoach) onLaunchCoach(project);
   }
@@ -3323,9 +3323,9 @@ Analyze the uploaded content and return a JSON object with this exact structure:
                 {/* Launch Coach button */}
                 <button
                   onClick={() => launchCoachWithContent(
-                    result.rewrittenOutline || result.bigIdea || "",
+                    rawToHtml(result.rewrittenOutline || result.bigIdea || ""),
                     (result.titleIdeas && result.titleIdeas[0]) || "Uploaded Sermon",
-                    "upload", fileName
+                    "upload", fileName, true
                   )}
                   style={{width:"100%", marginTop:16, padding:"12px", background:t.accentGrad, border:"none", borderRadius:8, fontFamily:"Inter,sans-serif", fontSize:13, fontWeight:700, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8}}>
                   🧠 Launch Coach with This Content
@@ -3441,9 +3441,7 @@ Analyze the uploaded content and return a JSON object with this exact structure:
                 {/* Launch Coach with PDF content */}
                 <button
                   onClick={() => {
-                    const tmp = document.createElement("div");
-                    tmp.innerHTML = pdfHtml;
-                    launchCoachWithContent(tmp.innerText, pdfFileName.replace(/\.pdf$/i,""), "pdf", pdfFileName);
+                    launchCoachWithContent(pdfHtml, pdfFileName.replace(/\.pdf$/i,""), "pdf", pdfFileName, true);
                   }}
                   style={{width:"100%", marginTop:14, padding:"12px", background:t.accentGrad, border:"none", borderRadius:8, fontFamily:"Inter,sans-serif", fontSize:13, fontWeight:700, color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8}}>
                   🧠 Launch Coach with This Content
@@ -3936,6 +3934,21 @@ function QuickFormatBar({ editorRef, t, vertical, onDone }) {
 }
 
 // ─── COACH VIEW (split: editor + AI chat) ────────────────────────────────────
+
+function parseCoachEdits(text) {
+  const edits = [];
+  const re = /<<<EDIT>>>([\s\S]*?)<<<END>>>/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    const block = m[1];
+    const label   = (block.match(/LABEL:\s*(.+)/)?.[1] || "").trim();
+    const find    = (block.match(/FIND:\s*(.+)/)?.[1] || "").trim();
+    const replace = (block.match(/REPLACE:\s*(.+)/)?.[1] || "").trim();
+    if (find && replace) edits.push({ label: label || "Edit suggestion", find, replace, applied: false, skipped: false });
+  }
+  return edits;
+}
+
 function CoachView({ project, onExit, t }) {
   const [content, setContent]     = useState(project.content || "");
   const [messages, setMessages]   = useState(project.coachMessages || []);
@@ -4064,14 +4077,50 @@ function CoachView({ project, onExit, t }) {
           setMessages([...updated, { ...streamingMsg }]);
         },
       });
-      const final = [...updated, { role:"assistant", content: reply }];
+      // Parse edit blocks out of the reply
+      const edits = parseCoachEdits(reply);
+      const displayContent = reply.replace(/<<<EDIT>>>[\s\S]*?<<<END>>>/g, "").trim();
+      const finalMsg = { role:"assistant", content: displayContent, edits };
+      const final = [...updated, finalMsg];
       setMessages(final);
-      window.cloudProjects.updateMessages(project.id, final).catch(()=>{});
+      // Persist without edits UI state (just role+content)
+      window.cloudProjects.updateMessages(project.id, final.map(m => ({ role:m.role, content:m.content }))).catch(()=>{});
     } catch(e) {
       const final = [...updated, { role:"assistant", content: `Error: ${e.message}` }];
       setMessages(final);
     }
     setSending(false);
+  }
+
+  function applyEdit(msgIdx, editIdx) {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const edit = messages[msgIdx].edits[editIdx];
+    const html = editor.innerHTML;
+    if (html.includes(edit.find)) {
+      editor.innerHTML = html.replace(edit.find, edit.replace);
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(edit.replace).catch(()=>{});
+      alert("Text location not found in editor — replacement copied to clipboard instead.");
+      return;
+    }
+    // Mark applied
+    setMessages(prev => prev.map((msg, mi) =>
+      mi !== msgIdx ? msg : {
+        ...msg,
+        edits: msg.edits.map((e, ei) => ei === editIdx ? { ...e, applied: true } : e),
+      }
+    ));
+  }
+
+  function skipEdit(msgIdx, editIdx) {
+    setMessages(prev => prev.map((msg, mi) =>
+      mi !== msgIdx ? msg : {
+        ...msg,
+        edits: msg.edits.map((e, ei) => ei === editIdx ? { ...e, skipped: true } : e),
+      }
+    ));
   }
 
   function handleHotButton(btn) {
@@ -4194,6 +4243,86 @@ function CoachView({ project, onExit, t }) {
               <span style={{fontFamily:"Inter,sans-serif", fontSize:9, color:t.textMuted, marginTop:3, paddingLeft:4, paddingRight:4}}>
                 {msg.role === "user" ? "You" : "Coach"}
               </span>
+
+              {/* ── Edit suggestion cards ── */}
+              {msg.role === "assistant" && msg.edits && msg.edits.length > 0 && (
+                <div style={{width:"90%", marginTop:6, display:"flex", flexDirection:"column", gap:5}}>
+                  {msg.edits.map((edit, ei) => edit.skipped ? null : (
+                    <div key={ei} style={{
+                      borderRadius:9,
+                      border:`1px solid ${edit.applied ? "#05966944" : t.surfaceBorder}`,
+                      background: edit.applied ? "#05966910" : t.panelBg,
+                      padding:"9px 12px",
+                      transition:"all 0.15s",
+                    }}>
+                      {/* Label row */}
+                      <div style={{
+                        fontFamily:"Inter,sans-serif", fontSize:11, fontWeight:700, marginBottom:5,
+                        color: edit.applied ? "#059669" : t.accent,
+                        display:"flex", alignItems:"center", gap:6,
+                      }}>
+                        {edit.applied
+                          ? <span>✓ Applied</span>
+                          : <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> Apply edit</>
+                        }
+                        <span style={{fontWeight:500, color:t.textMuted}}>— {edit.label}</span>
+                      </div>
+
+                      {!edit.applied && (
+                        <>
+                          {/* Before */}
+                          <div style={{
+                            fontFamily:"Inter,sans-serif", fontSize:11, color:t.textMuted,
+                            textDecoration:"line-through", marginBottom:3, lineHeight:1.45,
+                            opacity:0.7, fontStyle:"italic",
+                          }}>
+                            {edit.find.length > 100 ? edit.find.slice(0,100)+"…" : edit.find}
+                          </div>
+                          {/* After */}
+                          <div style={{
+                            fontFamily:"Inter,sans-serif", fontSize:11, color:"#059669",
+                            marginBottom:9, lineHeight:1.45,
+                          }}>
+                            → {edit.replace.length > 100 ? edit.replace.slice(0,100)+"…" : edit.replace}
+                          </div>
+                          {/* Buttons */}
+                          <div style={{display:"flex", gap:6}}>
+                            <button
+                              onClick={() => applyEdit(i, ei)}
+                              style={{
+                                padding:"4px 14px", borderRadius:6, border:"none", cursor:"pointer",
+                                background:t.accent, color:"#fff",
+                                fontFamily:"Inter,sans-serif", fontSize:11, fontWeight:700,
+                              }}>
+                              Apply
+                            </button>
+                            <button
+                              onClick={() => skipEdit(i, ei)}
+                              style={{
+                                padding:"4px 12px", borderRadius:6, cursor:"pointer",
+                                border:`1px solid ${t.surfaceBorder}`,
+                                background:"transparent", color:t.textMuted,
+                                fontFamily:"Inter,sans-serif", fontSize:11,
+                              }}>
+                              Skip
+                            </button>
+                            <button
+                              onClick={() => navigator.clipboard.writeText(edit.replace)}
+                              style={{
+                                padding:"4px 12px", borderRadius:6, cursor:"pointer",
+                                border:`1px solid ${t.surfaceBorder}`,
+                                background:"transparent", color:t.textMuted,
+                                fontFamily:"Inter,sans-serif", fontSize:11,
+                              }}>
+                              Copy
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
 
@@ -6644,12 +6773,12 @@ function App() {
               {mode.isEditor && output && (
                 <button
                   onClick={() => {
-                    const plainText = stripTags(output);
                     const title = extractTitle(input, modeId);
                     launchCoach({
                       id: "proj-" + Date.now(),
                       title,
-                      content: plainText,
+                      content: rawToHtml(output),
+                      isHtml: true,
                       sourceType: "generated",
                       sourceFile: null,
                       coachMessages: [],

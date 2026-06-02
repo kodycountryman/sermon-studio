@@ -378,7 +378,23 @@ YOUR BEHAVIOR:
 6. Think like a room full of consultants reviewing a talk before a major event. High stakes. High standards. High love.
 7. Keep responses focused and practical. No long preambles. Jump straight to the coaching.
 
-NEVER use markdown formatting. No **, no ##, no *, no _. Plain text with numbers for lists. Never use dashes.`;
+NEVER use markdown formatting. No **, no ##, no *, no _. Plain text with numbers for lists. Never use dashes.
+
+APPLY-EDIT BLOCKS: When you are suggesting a specific word-for-word text swap in the sermon, wrap each suggestion in this exact format so the pastor can apply it with one click:
+
+<<<EDIT>>>
+LABEL: Short description of the change (e.g. "Punch up opening line")
+FIND: The exact phrase or sentence from the sermon to replace (one sentence or short phrase — verbatim from the text)
+REPLACE: The improved version to use instead
+<<<END>>>
+
+Rules for edit blocks:
+- Only use them when you are rewriting a specific existing line or phrase from the sermon.
+- Keep FIND to a single sentence or short phrase — never multi-paragraph.
+- FIND must be text that actually appears in the sermon, quoted exactly.
+- Conversational coaching, general feedback, and observations should stay as plain text.
+- You may include multiple edit blocks in one response — one per suggested change.
+- Always write your main coaching text first, then place the edit blocks after.`;
 
 const COACH_HOT_BUTTONS = [
   { id: "flow",      emoji: "🔄", label: "How's my flow?",     prompt: "Walk through my sermon from top to bottom and evaluate the flow. How do the transitions between points feel? Where does energy drop? Where does logic jump? Give me specific feedback on pacing and progression, referencing actual lines from my content." },
