@@ -1,0 +1,14 @@
+export const WORKSHOPS={opening:{label:'Opening workshop',request:'Develop three distinct opening approaches for this sermon, such as a relatable question, an honest observation, and an illustration. Use its central message, current audience and intended closing. Establish the tension and bridge to the first point. Never invent my personal experiences. If a personal story is needed, ask a focused question in the coaching.'},closing:{label:'Closing workshop',request:'Develop three distinct closings that follow from the actual sermon: a practical response, a prayer, and an invitation when supported by the message. Connect to its Scripture and central message, avoid manipulation or unsupported promises, and consider a callback to the opening.'},callback:{label:'Find callbacks',request:'Find concrete connections between the existing opening and closing. Identify repeated images, questions or memorable lines, explaining the connection. Offer up to three distinct closing callback drafts using those actual connections. If the connection is weak, say so and propose a bridge without inventing an opening story.'}};
+export const WORKSHOP_PROTOCOL=`WORKSHOP RESPONSE FORMAT: This request is a workshop. It overrides the single replacement format for this response only. First give brief coaching in plain text. Then provide up to three ready to preach options, each using exactly <<<OPTION:1|Short title>>> then its full draft, then <<<END_OPTION>>>. Use 2 or 3 for later options. Use only the supported sermon formatting tags inside drafts, with blank lines between paragraphs. No Markdown or other HTML. Do not use REWRITE markers. If selectedPassage is provided, every option must replace the ENTIRE selection and preserve all selected material outside the requested opening or closing changes. Explain if the selected passage is unsuitable and ask for the correct selection instead of producing options. Without a selection, offer standalone drafts; nothing is applied automatically. Preserve quoted Scripture verbatim and do not invent statistics, citations or personal experiences.`;
+export function parseWorkshop(raw){
+  const options=[];const pattern=/<<<OPTION:([123])\|([^>\n]{1,100})>>>([\s\S]*?)<<<END_OPTION>>>/g;
+  for(const match of raw.matchAll(pattern))if(match[3].trim() && !options.some(option=>option.id===match[1]))options.push({id:match[1],title:match[2].trim(),text:match[3].trim()});
+  const start=raw.indexOf('<<<OPTION:');
+  let coaching=start<0?raw:raw.slice(0,start);
+  if(start<0)coaching=coaching.replace(/<+[^\n]*$/,'');
+  return {coaching:coaching.trim(),options};
+}
+export function workshopRequest(kind,instructions=''){
+  if(!WORKSHOPS[kind])throw new Error('Unknown workshop');
+  return WORKSHOPS[kind].request+(instructions.trim()?`\n\nAdditional instructions: ${instructions.trim()}`:'');
+}

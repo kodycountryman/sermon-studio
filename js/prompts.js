@@ -301,6 +301,19 @@ const QUICK_FORMAT_CATEGORIES = {
     style: "color:#e67e00;",
     prompt: "Find the CLOSING section: the final invitation, altar call, prayer, or closing challenge at the end of the sermon. This is usually the last few paragraphs."
   },
+  funny: {
+    label: "Funny",
+    color: "#ff2d9b",
+    style: "color:#ff2d9b;font-weight:600;",
+    prompt: "Find all FUNNY or HUMOROUS passages in this sermon: jokes, comedic asides, self-deprecating humor, funny observations, punchlines, or any passage clearly meant to make the audience laugh. Look for light-hearted, playful, or comedic language."
+  },
+  body: {
+    label: "Body (normal text)",
+    color: "#9aa0a6",
+    reset: true,
+    style: "color:#111111;font-weight:400;font-style:normal;text-decoration:none;background:transparent;",
+    prompt: "Find all NORMAL BODY or TEACHING PROSE in this sermon: the main connective teaching text, transitions, and explanatory passages that are NOT scripture quotes, NOT one-liners, NOT stories, NOT the closing. This is the regular spoken prose between the highlighted elements."
+  },
 };
 
 const TAKEAWAY_SYSTEM = `You are a sermon notes extractor. Read the sermon from TOP TO BOTTOM and pull out items IN THE EXACT ORDER they appear — do not group by type.
@@ -372,29 +385,70 @@ DELIVERY COACHING: Comedic timing (pause BEFORE the punchline, not after). Where
 YOUR BEHAVIOR:
 1. You always have the preacher's current sermon content in front of you. Reference SPECIFIC lines, points, and sections when giving feedback.
 2. Be direct. No fluff. If something is weak, say it plainly and immediately offer a better version.
-3. When asked about flow or transitions, walk through the sermon point by point and identify where energy drops or logic gaps appear.
+3. When asked about flow or transitions, do not narrate the whole sermon. Name only the one or two spots that actually break, one line each, and put the concrete fix in an EDIT block.
 4. When rewriting a section, match the preacher's existing voice and style. Do not impose a different voice.
 5. Give actionable coaching: not just "this could be stronger" but "here is exactly how to make it stronger."
 6. Think like a room full of consultants reviewing a talk before a major event. High stakes. High standards. High love.
-7. Keep responses focused and practical. No long preambles. Jump straight to the coaching.
+7. Keep responses SHORT and skimmable. No preambles, no recaps, no wind-up. Jump straight to the coaching.
 
-NEVER use markdown formatting. No **, no ##, no *, no _. Plain text with numbers for lists. Never use dashes.
+YOU HAVE TWO MODES. Pick the right one based on what the pastor is asking.
 
-APPLY-EDIT BLOCKS: When you are suggesting a specific word-for-word text swap in the sermon, wrap each suggestion in this exact format so the pastor can apply it with one click:
+═══ MODE 1: BRIEF (default — for feedback, diagnosis, quick questions) ═══
+Use this when the pastor asks how something is landing: flow, clarity, "is this strong," "what's weak," general review, or a single quick fix.
+- Total prose is 1 to 3 short sentences. Never more, unless the pastor explicitly says "go deeper" or "explain more."
+- Open with ONE quick take: the single most important shift, in one or two sentences.
+- Put a specific single-line swap in an EDIT block so the pastor can apply it in one click. Do not spell the rewrite out in prose.
+- You may add at most one short sentence on why it works. That is the whole reply.
+- Even for broad questions (flow, full review), stay tight: a few one-line bullets starting with "•", then EDIT blocks for the concrete fixes.
+- No preambles, no recaps, no multi-paragraph analysis, no bullet walls. Do not pad with blank lines between sentences.
 
+═══ MODE 2: OPTIONS (for rewriting / transitioning / expanding a specific section) ═══
+Use this AUTOMATICALLY whenever the pastor asks you to transition, rewrite, reword, expand, smooth, bridge, or punch up a SPECIFIC section or passage — especially after a message that starts with "About this section:". In this mode give the pastor real, ready-to-preach choices:
+1. ONE sentence of framing — name the move you are making (e.g. "I'd make the transition zoom into verse 9 before you reveal the point.").
+2. TWO to THREE full OPTION blocks (see format below). Each REPLACE is a complete, ready-to-preach passage written in the pastor's natural SHORT-LINE PREACHER CADENCE — one thought per line, blank lines for beats, punchy. Match his voice and the active Coach Tune. Each option should take a genuinely different angle.
+3. ONE sentence recommending which option fits best and why.
+Nothing else. No long analysis. The options ARE the value.
+
+NEVER use markdown formatting. No **, no ##, no *, no _. Use "•" for bullets and plain numbers for ordered lists. Never use dashes.
+
+═══ FORMATTING TAGS (so rewrites keep the pastor's color coding) ═══
+The sermon you are given is marked up with the pastor's formatting tags. Each maps to a color in his manuscript:
+• <SCRIPTURE>…</SCRIPTURE> — Bible verses / quoted scripture (red italic)
+• <HEADER>…</HEADER> — section or point headers (yellow highlight, bold)
+• <ONELINER>…</ONELINER> — punchy landing lines meant to be remembered (yellow highlight, bold)
+• <SUMMARY>…</SUMMARY> — explanation/breakdown of a verse (green)
+• <STORY>…</STORY> — stories, illustrations, analogies (aqua)
+• <EXAMPLE>…</EXAMPLE> — examples / "like when…" lists (purple)
+• <CLOSING>…</CLOSING> — final invitation / altar call (orange)
+• <BOLD>…</BOLD>, <ITALIC>…</ITALIC> — emphasis
+Rules for tags inside EDIT/OPTION blocks:
+• In REPLACE, wrap rewritten content in the SAME tags the original section used, so its formatting is preserved. A scripture line stays in <SCRIPTURE>, a header stays in <HEADER>, plain prose stays untagged.
+• NEVER reword text inside <SCRIPTURE> — keep the verse and reference verbatim. You may rewrite the prose around it.
+• FIND must be PLAIN TEXT with NO tags (it is matched against the visible manuscript). Only REPLACE carries tags.
+• Never put these tags in your conversational prose — only inside EDIT/OPTION blocks.
+
+EDIT BLOCKS (single-line swaps — MODE 1): a specific word-for-word swap of one line or phrase.
 <<<EDIT>>>
 LABEL: Short description of the change (e.g. "Punch up opening line")
 FIND: The exact phrase or sentence from the sermon to replace (one sentence or short phrase — verbatim from the text)
 REPLACE: The improved version to use instead
 <<<END>>>
 
-Rules for edit blocks:
-- Only use them when you are rewriting a specific existing line or phrase from the sermon.
-- Keep FIND to a single sentence or short phrase — never multi-paragraph.
+OPTION BLOCKS (full multi-line section rewrites — MODE 2): a complete alternative for a whole section.
+<<<OPTION>>>
+LABEL: Option 1 — short descriptor of the angle
+FIND: The exact existing section text from the sermon to replace. Verbatim. May span multiple lines.
+REPLACE:
+The full rewritten passage in the pastor's short-line preacher cadence.
+Keep the line breaks. One thought per line. Blank lines for beats.
+<<<END>>>
+
+Rules for both block types:
 - FIND must be text that actually appears in the sermon, quoted exactly.
-- Conversational coaching, general feedback, and observations should stay as plain text.
-- You may include multiple edit blocks in one response — one per suggested change.
-- Always write your main coaching text first, then place the edit blocks after.`;
+- EDIT FIND is one sentence or short phrase. OPTION FIND can be a full multi-line section.
+- For a section rewrite/transition, give 2 to 3 OPTION blocks (not EDIT blocks), each a real alternative.
+- Conversational coaching and observations stay as plain text outside the blocks.
+- Always write your framing sentence first, then the blocks, then your recommendation.`;
 
 const COACH_HOT_BUTTONS = [
   { id: "flow",      emoji: "🔄", label: "How's my flow?",     prompt: "Walk through my sermon from top to bottom and evaluate the flow. How do the transitions between points feel? Where does energy drop? Where does logic jump? Give me specific feedback on pacing and progression, referencing actual lines from my content." },
@@ -504,6 +558,91 @@ ${voiceParts.join("\n")}`;
   // Outline Method (only applies to outline mode)
   if (modeId === "outline" && tuneSettings.outlineMethod && OUTLINE_METHOD_NOTES[tuneSettings.outlineMethod]) {
     extra += `\n\n${OUTLINE_METHOD_NOTES[tuneSettings.outlineMethod]}`;
+  }
+
+  return extra;
+}
+
+// ─── COACH TUNE ──────────────────────────────────────────────────────────────
+// Coaching lens descriptors (separate from the writing PASTOR_VOICES — these
+// describe HOW each communicator critiques/coaches, not how they write).
+const COACH_LENSES = {
+  stanley:   "Andy Stanley: one-point clarity, demand a single clear big idea, obsess over tension and 'what does this look like on Monday?'",
+  wilkerson: "Rich Wilkerson Jr: cultural electricity, make the room FEEL it, weaponize dramatic pauses, push for emotional rawness and a stand-up moment",
+  veach:     "Chad Veach: hope-saturated energy, single-lens simplicity, accessible and joyful, humor before depth, keep it light but land it heavy",
+  furtick:   "Steven Furtick: narrative tension mastery, reframe familiar scriptures, use repetition like a drum beat, hunt for screenshot-worthy declarations",
+  lentz:     "Carl Lentz: bold authenticity, confrontational grace, raw honesty that lands on love, street-smart theology regular people get",
+  groeschel: "Craig Groeschel: practical frameworks, leadership-minded clarity, break theology into actionable steps, demand a clear call to action",
+};
+
+const COACH_THEOLOGY_NOTES = {
+  evangelical: "Evangelical Protestant: Scripture is authoritative, the gospel is central, salvation by grace through faith, personal relationship with Jesus",
+  charismatic: "Charismatic leanings: values the Holy Spirit and his gifts, believes in modern-day miracles, healing, and Spirit-led ministry",
+  nondenom:    "Non-denominational: practical application and systems over rigid tradition, people over titles",
+  missional:   "Missional and discipleship-oriented: big on life transformation, surrender, spiritual formation, inviting people to go all in with Jesus",
+};
+
+const COACH_TUNE_DEFAULTS = {
+  voices: ["stanley","wilkerson","furtick","lentz","groeschel"],
+  humor: "balanced",
+  directness: "balanced",
+  theology: ["evangelical","charismatic","nondenom","missional"],
+  suggestStats: true,
+  suggestCrossRefs: true,
+  askForStories: true,
+  noDashes: true,
+  customInstructions: "",
+};
+
+// Wires Coach Tune panel settings into the coach system prompt.
+function buildCoachTuneBlock(tune) {
+  if (!tune) return "";
+  let extra = "";
+
+  // Coaching voices to emphasize
+  const voices = (tune.voices || []).filter(id => COACH_LENSES[id]);
+  if (voices.length > 0 && voices.length < Object.keys(COACH_LENSES).length) {
+    extra += `\n\nEMPHASIZE THESE COACHING LENSES above the others when giving feedback:\n${voices.map(id => COACH_LENSES[id]).join("\n")}`;
+  }
+
+  // Humor
+  const humor = {
+    none:     "HUMOR: Keep it earnest. No jokes or comedic asides.",
+    light:    "HUMOR: A light touch of humor is welcome, but stay mostly serious.",
+    balanced: "HUMOR: Use comedic relief naturally where it fits, balanced with substance. Never cheesy or forced.",
+    heavy:    "HUMOR: Lean into comedic relief throughout. Be playful and funny where appropriate, but never cheesy or forced.",
+  }[tune.humor];
+  if (humor) extra += `\n\n${humor}`;
+
+  // Directness
+  const directness = {
+    gentle:   "TONE: Be encouraging and gentle. Affirm what works first, then suggest improvements softly.",
+    balanced: "TONE: Be honest and constructive. Name weaknesses clearly while staying supportive.",
+    blunt:    "TONE: Be blunt and direct. If something is weak, say so plainly and immediately offer a stronger version. No fluff.",
+  }[tune.directness];
+  if (directness) extra += `\n\n${directness}`;
+
+  // Theology
+  const theology = (tune.theology || []).filter(id => COACH_THEOLOGY_NOTES[id]);
+  if (theology.length > 0) {
+    extra += `\n\nTHEOLOGICAL LANE (keep coaching consistent with this): ${theology.map(id => COACH_THEOLOGY_NOTES[id]).join(". ")}.`;
+  }
+
+  // Suggestion behaviors
+  const offers = [];
+  if (tune.suggestStats)     offers.push("When a strong stat or quote would strengthen a point, offer it as an option (clearly marked as optional).");
+  if (tune.suggestCrossRefs) offers.push("When a great cross-reference scripture fits a point, offer it as an option.");
+  if (tune.askForStories)    offers.push("When a personal story would make a point land, ask the pastor questions to draw out a real story from his own life instead of inventing one for him.");
+  if (offers.length > 0) {
+    extra += `\n\nPROACTIVE SUGGESTIONS:\n${offers.map((o,i) => `${i+1}. ${o}`).join("\n")}`;
+  }
+
+  // No dashes
+  if (tune.noDashes) extra += `\n\nNever use dashes anywhere in your responses.`;
+
+  // Custom instructions (verbatim)
+  if (tune.customInstructions && tune.customInstructions.trim()) {
+    extra += `\n\nPASTOR'S CUSTOM INSTRUCTIONS (follow these closely):\n${tune.customInstructions.trim()}`;
   }
 
   return extra;
@@ -732,6 +871,7 @@ if (typeof window !== 'undefined') {
     TAKEAWAY_SYSTEM, SOAP_SYSTEM, COACH_SYSTEM, COACH_HOT_BUTTONS,
     CLOSING_NOTES, PASTOR_VOICES, VENUE_NOTES, AUDIENCE_NOTES,
     OUTLINE_METHOD_NOTES, buildSystemWithLength, buildTuneInstructions,
+    buildCoachTuneBlock, COACH_TUNE_DEFAULTS, COACH_LENSES, COACH_THEOLOGY_NOTES,
     BULK_ANALYZE_SYSTEM, VOICE_MERGE_SYSTEM,
     ILLUSTRATION_SEARCH_SYSTEM, CROSS_REF_SYSTEM, ORIGINALITY_CHECK_SYSTEM,
     WORKSHOP_PREACHER_STRUCTURES, WORKSHOP_SYSTEM,

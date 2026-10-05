@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { scripturePreviewPlugin } from './dev/scripture-preview.js'
+import { codexPreviewPlugin } from './dev/codex-preview.js'
 
-export default defineConfig({
-  plugins: [react()],
+export default defineConfig(({ command }) => ({
+  plugins: [react(), scripturePreviewPlugin(), codexPreviewPlugin()],
+  define: { 'import.meta.env.VITE_AI_PROVIDER': JSON.stringify(command === 'serve' ? 'codex' : 'cloudflare') },
   server: {
     port: 5173,
     proxy: {
@@ -33,4 +36,4 @@ export default defineConfig({
       'firebase/compat/firestore',
     ],
   },
-})
+}))

@@ -27,11 +27,5 @@
   <!-- Vite entry point (handles React, JSX, npm imports) -->
   <script type="module" src="/src/main.jsx"></script>
 
-  <!-- Service Worker registration -->
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(() => {});
-    }
-  </script>
 </body>
 </html>

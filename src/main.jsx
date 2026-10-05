@@ -5,6 +5,7 @@
 
 // 1. Load utilities + cloud providers (initializes firebase, supabase, sets window.pdfjsLib)
 import '../js/utils.js';
+import '../js/offline.js';
 
 // 2. Load config (populates window.THEMES, window.LENGTHS, etc.)
 import '../js/config.js';
